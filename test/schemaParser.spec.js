@@ -2,9 +2,7 @@
 /* eslint-disable no-unused-expressions */
 
 const chai = require('chai')
-chai.use(require('sinon-chai'))
 const expect = chai.expect
-// const sinon = require('sinon')
 const SchemaParser = require('../src/SchemaParser')
 
 describe('Knex string builder', () => {
@@ -293,5 +291,123 @@ describe('Knex string builder', () => {
     const knex = new SchemaParser()._columnKnex(column)
 
     expect(knex).to.equal(`table.integer('myRelationship').notNullable().references('id').on('otherTable').onDelete('set null')`)
+  })
+})
+
+describe('Object manipulation helpers', () => {
+  it('Get table name by id', () => {
+    const schema = new SchemaParser()
+    schema.tableIds.id123 = 'myTable'
+    schema.tableIds.id333 = 'anotherTable'
+
+    expect(schema._getTableName('id123')).to.equal('myTable')
+  })
+
+  it('Get table id from name', () => {
+    const schema = new SchemaParser()
+    schema.tableIds.id123 = 'myTable'
+    schema.tableIds.id333 = 'anotherTable'
+
+    expect(schema._getTableId('anotherTable')).to.equal('id333')
+  })
+
+  it('Get column name by id', () => {
+    const schema = new SchemaParser()
+    schema.columnIds.id123 = {
+      name: 'myField',
+      table: 'myTable'
+    }
+    schema.columnIds.id333 = {
+      name: 'anotherField',
+      table: 'anotherTable'
+    }
+
+    expect(schema._getColumnName('id123')).to.equal('myField')
+  })
+
+  it('Get column table by id', () => {
+    const schema = new SchemaParser()
+    schema.columnIds.id123 = {
+      name: 'myField',
+      table: 'myTable'
+    }
+    schema.columnIds.id333 = {
+      name: 'anotherField',
+      table: 'anotherTable'
+    }
+
+    expect(schema._getColumnTable('id333')).to.equal('anotherTable')
+  })
+
+  it('Get column id by name and table', () => {
+    const schema = new SchemaParser()
+    schema.columnIds.id123 = {
+      name: 'myField',
+      table: 'myTable'
+    }
+    schema.columnIds.id333 = {
+      name: 'anotherField',
+      table: 'anotherTable'
+    }
+
+    expect(schema._getColumnId('myField', 'myTable')).to.equal('id123')
+  })
+
+  it('Convert basic object to array', () => {
+    const object = {
+      firstKey: 'val',
+      nextKey: 'anotherVal'
+    }
+    const array = new SchemaParser()._objectToArray(object)
+
+    expect(array).to.deep.equal(['val', 'anotherVal'])
+  })
+
+  it('Convert nested object to array', () => {
+    const object = {
+      firstKey: {
+        attr1: 'val',
+        attr2: 'someVal'
+      },
+      nextKey: {
+        attr1: 'anotherVal',
+        attr2: 'thisVal'
+      }
+    }
+    const array = new SchemaParser()._objectToArray(object)
+
+    expect(array).to.deep.equal([{
+      attr1: 'val',
+      attr2: 'someVal',
+      key: 'firstKey'
+    }, {
+      attr1: 'anotherVal',
+      attr2: 'thisVal',
+      key: 'nextKey'
+    }])
+  })
+
+  it('Convert nested object to array with specified key field', () => {
+    const object = {
+      firstKey: {
+        attr1: 'val',
+        attr2: 'someVal'
+      },
+      nextKey: {
+        attr1: 'anotherVal',
+        attr2: 'thisVal'
+      }
+    }
+    const array = new SchemaParser()._objectToArray(object, 'name')
+
+    expect(array).to.deep.equal([{
+      attr1: 'val',
+      attr2: 'someVal',
+      name: 'firstKey'
+    }, {
+      attr1: 'anotherVal',
+      attr2: 'thisVal',
+      name: 'nextKey'
+    }])
   })
 })

@@ -24,14 +24,26 @@ class SchemaParser {
   }
 
   _getColumnTable (id) {
-    return this.tableIds[id].table
+    return this.columnIds[id].table
   }
 
   _getColumnName (id) {
-    return this.tableIds[id].name
+    return this.columnIds[id].name
   }
 
-  _objectToArray (obj, keyField = 'name') {
+  _getColumnId (columnName, tableName) {
+    let matchId
+
+    this._objectToArray(this.columnIds, 'id').map(column => {
+      if (column.name === columnName && column.table === tableName) {
+        matchId = column.id
+      }
+    })
+
+    return matchId
+  }
+
+  _objectToArray (obj, keyField = 'key') {
     const array = []
 
     Object.keys(obj).map(key => {
@@ -43,18 +55,6 @@ class SchemaParser {
     })
 
     return array
-  }
-
-  _getColumnId (columnName, tableName) {
-    let matchId
-
-    Object.keys(this.tableIds).map(id => {
-      if (this.tableIds[id].column === columnName && this.tableIds[id].table === tableName) {
-        matchId = id
-      }
-    })
-
-    return matchId
   }
 
   convert () {
@@ -218,10 +218,10 @@ class SchemaParser {
   }
 
   _generateMigrations (tables) {
-    const migrations = this._objectToArray(tables)
+    const migrations = this._objectToArray(tables, 'name')
 
     migrations.map(migration => {
-      migration.columns = this._objectToArray(migration.columns)
+      migration.columns = this._objectToArray(migration.columns, 'name')
     })
 
     return migrations
