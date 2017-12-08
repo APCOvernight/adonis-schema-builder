@@ -245,6 +245,10 @@ describe('Output formatted objects and arrays', () => {
         {
           id: 'myv42i',
           name: 'users'
+        },
+        {
+          id: '4rsea1',
+          name: 'test'
         }
       ],
       columns: {
@@ -263,6 +267,9 @@ describe('Output formatted objects and arrays', () => {
           { id: 'z8st7', name: 'name' },
           { id: '79km0sf', name: 'email' },
           { id: 'b0y62p', name: 'id' }
+        ],
+        '4rsea1': [
+          { id: 'f4sge3', name: 'id', autoInc: true }
         ]
       }
     }
@@ -271,17 +278,20 @@ describe('Output formatted objects and arrays', () => {
   it('Migrations array is returned', () => {
     const { migrations } = new SchemaParser(schema).convert()
     expect(migrations).to.be.an('array')
-    expect(migrations[0].columns).to.be.an('array')
-    expect(migrations[0].columns[0]).to.be.an('object')
-    expect(migrations[0].columns[0].knexString).to.not.be.undefined
+    expect(migrations[0].columnsArray).to.be.an('array')
+    expect(migrations[0].columnsArray[0]).to.be.an('object')
+    expect(migrations[0].columnsArray[0].knexString).to.not.be.undefined
   })
 
   it('Factories array is returned', () => {
     const { factories } = new SchemaParser(schema).convert()
     expect(factories).to.be.an('array')
-    expect(factories[0].columns).to.be.an('array')
-    expect(factories[0].columns[0]).to.be.an('object')
-    expect(factories[0].columns[0].fieldRule).to.not.be.undefined
+    expect(factories[0].columnsArray).to.be.an('array')
+    expect(factories[0].columnsArray[0]).to.be.an('object')
+    expect(factories[0].columnsArray[0].fieldRule).to.not.be.undefined
+
+    expect(factories[2].columnsArray[1].fieldRule).to.equal('email: faker.,')
+    expect(factories[2].columnsArray[2].fieldRule).to.equal('id: faker.')
   })
 
   it('Models array is returned', () => {

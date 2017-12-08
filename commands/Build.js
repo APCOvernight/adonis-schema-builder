@@ -38,10 +38,11 @@ class BuildCommand extends BaseCommand {
     }
 
     const templateSchema = new SchemaParser(schema).convert()
-    console.log('\n\n', templateSchema)
 
     const writer = new FileWriter(this)
+
     await writer.migrations(templateSchema.migrations)
+    await writer.factories(templateSchema.factories)
   }
 
   async _loadSchema (path) {

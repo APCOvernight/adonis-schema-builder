@@ -5,9 +5,9 @@ const Schema = use('Schema')
 class {{ name }} extends Schema {
   up () {
     this.create('{{ table }}', (table) => {
-    {{ #columns }}
+    {{ #columnsArray }}
       {{ &knexString }}
-    {{ /columns }}
+    {{ /columnsArray }}
     {{ #timestamp }}
       table.timestamps()
     {{ /timestamp }}

@@ -5,8 +5,9 @@ const Utils = {
     const array = []
 
     Object.keys(obj).map(key => {
-      const item = obj[key]
-      if (typeof item === 'object') {
+      let item = obj[key]
+      if (typeof obj[key] === 'object') {
+        item = Object.assign({}, obj[key])
         item[keyField] = key
       }
       array.push(item)

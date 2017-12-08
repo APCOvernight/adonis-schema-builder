@@ -7,10 +7,10 @@ class MigrationFormatter {
     const migrations = Utils.objectToArray(tables, 'name')
 
     migrations.map(migration => {
-      migration.columns = Utils.objectToArray(migration.columns, 'name')
+      migration.columnsArray = Utils.objectToArray(migration.columns, 'name')
 
-      migration.columns.map(column => {
-        column.knexString = this._columnKnex
+      migration.columnsArray.map(column => {
+        column.knexString = this._columnKnex(column)
       })
     })
 

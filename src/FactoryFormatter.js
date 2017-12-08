@@ -7,11 +7,18 @@ class FactoryFormatter {
     const factories = Utils.objectToArray(tables, 'name')
 
     factories.map(factory => {
-      factory.columns = Utils.objectToArray(factory.columns, 'name')
+      factory.columnsArray = Utils.objectToArray(factory.columns, 'name')
 
-      factory.columns.map(column => {
-        column.fieldRule = this._generateFieldRule
+      factory.columnsArray.map(column => {
+        column.fieldRule = this._generateFieldRule(column)
       })
+
+      const columnsWithRules = factory.columnsArray.filter(column => column.fieldRule)
+
+      if (columnsWithRules.length) {
+        // Remove comma from last rule
+        columnsWithRules[columnsWithRules.length - 1].fieldRule = columnsWithRules[columnsWithRules.length - 1].fieldRule.slice(0, -1)
+      }
     })
 
     return factories

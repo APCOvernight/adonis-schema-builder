@@ -20,7 +20,8 @@ class FileWriter {
         commands: 'Commands',
         views: 'resources/views',
         migrations: 'database/migrations',
-        seeds: 'database/seeds'
+        seeds: 'database/seeds',
+        factory: 'database/factory.js'
       },
       appRoot: this.commander.helpers._appRoot
     }
@@ -36,6 +37,27 @@ class FileWriter {
     }))
   }
 
+  async factories (factories) {
+    const factoryExists = await this.commander.pathExists(path.join(this.options.appRoot, this.options.dirs.migrations))
+
+    factories.map(table => {
+      table.name = require('./Generators').model.getFileName(table.name)
+    })
+    let deleteExisting
+    if (factoryExists) {
+      deleteExisting = await this.commander.confirm('Delete existing factory.js?')
+      if (deleteExisting) {
+        await this.commander.removeFile(path.join(this.options.appRoot, this.options.dirs.factory))
+      }
+    }
+
+    if (deleteExisting || !factoryExists) {
+      return this._generateFile('factory', 'factory', {tables: factories})
+    }
+
+    return null
+  }
+
   async _generateFile (templateFor, name, data, flags) {
     const generator = require('./Generators')[templateFor]
 
@@ -45,6 +67,7 @@ class FileWriter {
     data = Object.assign(data, generator.getData(name, flags))
 
     const templateContents = await this.commander.readFile(templateFile, 'utf-8')
+
     await this.commander.generateFile(filePath, templateContents, data)
 
     const createdFile = filePath.replace(process.cwd(), '').replace(path.sep, '')
