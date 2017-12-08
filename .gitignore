@@ -5,3 +5,4 @@ node_modules
 coverage
 .stryker-tmp
 reports
+tests/.tmp

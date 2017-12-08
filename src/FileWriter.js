@@ -31,8 +31,8 @@ class FileWriter {
     if (deleteExisting) {
       this.commander.emptyDir(path.join(this.options.appRoot, this.options.dirs.migrations))
     }
-    await Promise.all(migrations.map(async migration => {
-      await this._generateFile('schema', migration.name, migration, { create: true })
+    return Promise.all(migrations.map(async migration => {
+      return this._generateFile('schema', migration.name, migration, { action: 'create' })
     }))
   }
 
@@ -42,15 +42,15 @@ class FileWriter {
     const templateFile = path.join(__dirname, 'Generators/templates/', `${templateFor}.mustache`)
 
     const filePath = generator.getFilePath(name, this.options)
-    const fullData = Object.assign(data, generator.getData(name, flags))
+    data = Object.assign(data, generator.getData(name, flags))
 
     const templateContents = await this.commander.readFile(templateFile, 'utf-8')
-    await this.commander.generateFile(filePath, templateContents, fullData)
+    await this.commander.generateFile(filePath, templateContents, data)
 
     const createdFile = filePath.replace(process.cwd(), '').replace(path.sep, '')
-    console.log(`${this.commander.icon('success')} ${this.commander.chalk.green('create')}  ${createdFile}`)
+    console.info(`${this.commander.icon('success')} ${this.commander.chalk.green('create')}  ${createdFile}`)
 
-    return { file: createdFile, namespace: this.commander.getNamespace(createdFile, templateFor) }
+    return { file: createdFile, namespace: this.commander.getNamespace(createdFile, templateFor), data }
   }
 }
 
