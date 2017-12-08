@@ -2,6 +2,7 @@
 
 const Utils = require('./Utils')
 const MigrationFormatter = require('./MigrationFormatter')
+const FactoryFormatter = require('./FactoryFormatter')
 
 class SchemaParser {
   constructor (schema) {
@@ -50,6 +51,7 @@ class SchemaParser {
     const tables = this._formatTables(this.schema.tables, this.schema.columns)
 
     const migrations = new MigrationFormatter().format(tables)
+    const factories = new FactoryFormatter().format(tables)
     const models = this._generateModels(tables)
     const seeds = this._generateSeeds(tables)
     const tests = this._generateTests(tables)
@@ -57,6 +59,7 @@ class SchemaParser {
     return {
       tables,
       migrations,
+      factories,
       models,
       seeds,
       tests
@@ -102,7 +105,31 @@ class SchemaParser {
       column.foreignKey = null
     }
 
+    this._convertType(column)
+
     return column
+  }
+
+  _convertType (column) {
+    if (['tinyInteger', 'smallInteger', 'mediumInteger'].includes(column.type)) {
+      column.type = 'integer'
+    }
+
+    if (column.length && ['text', 'char'].includes(column.type)) {
+      column.type = 'string'
+    }
+
+    if (column.type === 'double') {
+      column.type = 'float'
+    }
+
+    if (column.type === 'char') {
+      column.type = 'text'
+    }
+
+    if (column.autoInc) {
+      column.type = 'increments'
+    }
   }
 
   _generateModels (tables) {

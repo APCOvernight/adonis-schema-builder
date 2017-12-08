@@ -5,6 +5,7 @@
 const chai = require('chai')
 const expect = chai.expect
 const MigrationFormatter = require('../src/MigrationFormatter')
+const SchemaParser = require('../src/SchemaParser')
 
 describe('Knex string builder', () => {
   it('Create a text field', () => {
@@ -12,6 +13,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'text'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn').notNullable()`)
@@ -22,6 +25,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'tinyText'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn', 'tinytext').notNullable()`)
@@ -32,6 +37,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'mediumText'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn', 'mediumtext').notNullable()`)
@@ -42,6 +49,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'longText'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn', 'longtext').notNullable()`)
@@ -52,6 +61,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'string'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.string('myColumn').notNullable()`)
@@ -62,6 +73,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'integer'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.integer('myColumn').notNullable()`)
@@ -72,6 +85,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'bigInteger'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.bigInteger('myColumn').notNullable()`)
@@ -82,6 +97,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'tinyInteger'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.integer('myColumn').notNullable()`)
@@ -92,6 +109,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'date'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.date('myColumn').notNullable()`)
@@ -102,6 +121,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'dateTime'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.dateTime('myColumn').notNullable()`)
@@ -112,6 +133,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'timestamp'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.timestamp('myColumn').notNullable()`)
@@ -122,6 +145,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'time'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.time('myColumn').notNullable()`)
@@ -132,6 +157,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'float'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.float('myColumn').notNullable()`)
@@ -142,6 +169,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'decimal'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.decimal('myColumn').notNullable()`)
@@ -152,6 +181,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'boolean'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.boolean('myColumn').notNullable()`)
@@ -162,6 +193,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'double'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.float('myColumn').notNullable()`)
@@ -172,6 +205,8 @@ describe('Knex string builder', () => {
       name: 'myColumn',
       type: 'char'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn').notNullable()`)
@@ -183,6 +218,8 @@ describe('Knex string builder', () => {
       type: 'text',
       length: 50
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.string('myColumn', 50).notNullable()`)
@@ -194,6 +231,8 @@ describe('Knex string builder', () => {
       type: 'string',
       length: 90
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.string('myColumn', 90).notNullable()`)
@@ -205,6 +244,8 @@ describe('Knex string builder', () => {
       type: 'integer',
       autoInc: true
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.increments('id').notNullable()`)
@@ -216,6 +257,8 @@ describe('Knex string builder', () => {
       type: 'text',
       defValue: 'someValue'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn').defaultTo('someValue').notNullable()`)
@@ -227,6 +270,8 @@ describe('Knex string builder', () => {
       type: 'text',
       comment: 'This field is dope'
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn').notNullable().comment('This field is dope')`)
@@ -238,6 +283,8 @@ describe('Knex string builder', () => {
       type: 'text',
       nullable: true
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn')`)
@@ -249,6 +296,8 @@ describe('Knex string builder', () => {
       type: 'text',
       unique: true
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.text('myColumn').notNullable().unique()`)
@@ -260,6 +309,8 @@ describe('Knex string builder', () => {
       type: 'integer',
       unsigned: true
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.integer('myColumn').notNullable().unsigned()`)
@@ -271,6 +322,8 @@ describe('Knex string builder', () => {
       type: 'integer',
       index: true
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.integer('myColumn').notNullable().index()`)
@@ -289,6 +342,8 @@ describe('Knex string builder', () => {
         }
       }
     }
+
+    new SchemaParser()._convertType(column)
     const knex = new MigrationFormatter()._columnKnex(column)
 
     expect(knex).to.equal(`table.integer('myRelationship').notNullable().references('id').on('otherTable').onDelete('set null')`)

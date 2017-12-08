@@ -9,7 +9,9 @@ class MigrationFormatter {
     migrations.map(migration => {
       migration.columns = Utils.objectToArray(migration.columns, 'name')
 
-      migration.columns.map(column => this._columnKnex)
+      migration.columns.map(column => {
+        column.knexString = this._columnKnex
+      })
     })
 
     return migrations
@@ -18,35 +20,11 @@ class MigrationFormatter {
   _columnKnex (column) {
     let string = 'table.'
 
-    this._convertType(column)
-
     string += this._knexType(column)
     string += this._knexChain(column)
     string += this._knexRelationships(column)
 
     return string
-  }
-
-  _convertType (column) {
-    if (['tinyInteger', 'smallInteger', 'mediumInteger'].includes(column.type)) {
-      column.type = 'integer'
-    }
-
-    if (column.length && ['text', 'char'].includes(column.type)) {
-      column.type = 'string'
-    }
-
-    if (column.type === 'double') {
-      column.type = 'float'
-    }
-
-    if (column.type === 'char') {
-      column.type = 'text'
-    }
-
-    if (column.autoInc) {
-      column.type = 'increments'
-    }
   }
 
   _knexChain (column) {

@@ -272,6 +272,16 @@ describe('Output formatted objects and arrays', () => {
     const { migrations } = new SchemaParser(schema).convert()
     expect(migrations).to.be.an('array')
     expect(migrations[0].columns).to.be.an('array')
+    expect(migrations[0].columns[0]).to.be.an('object')
+    expect(migrations[0].columns[0].knexString).to.not.be.undefined
+  })
+
+  it('Factories array is returned', () => {
+    const { factories } = new SchemaParser(schema).convert()
+    expect(factories).to.be.an('array')
+    expect(factories[0].columns).to.be.an('array')
+    expect(factories[0].columns[0]).to.be.an('object')
+    expect(factories[0].columns[0].fieldRule).to.not.be.undefined
   })
 
   it('Models array is returned', () => {
