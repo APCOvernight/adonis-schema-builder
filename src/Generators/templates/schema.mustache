@@ -1,0 +1,25 @@
+'use strict'
+
+const Schema = use('Schema')
+
+class {{ name }} extends Schema {
+  up () {
+    this.create('{{ table }}', (table) => {
+    {{ #columns }}
+      {{ &knexString }}
+    {{ /columns }}
+    {{ #timestamp }}
+      table.timestamps()
+    {{ /timestamp }}
+    {{ #softDelete }}
+      table.softDeletes()
+    {{ /softDelete }}
+    })
+  }
+
+  down () {
+    this.drop('{{ table }}')
+  }
+}
+
+module.exports = {{ name }}

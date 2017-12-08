@@ -1,0 +1,75 @@
+{
+  "name": "adonis-schema-builder",
+  "version": "0.0.0",
+  "description": "Quickly create adonis migrations, seeds, models and tests for AdonisJS from a schema json file",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run lint && nyc mocha",
+    "lint": "eslint *.js test/**/*.js src/**/*.js lib/**/*.js ",
+    "coverage": "nyc report --reporter=text-lcov | coveralls && nyc report --reporter=text-lcov | codeclimate-test-reporter",
+    "stryker": "stryker run"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@adonisjs/ace": "^4.0.7",
+    "@adonisjs/cli": "^3.0.17",
+    "@adonisjs/fold": "^4.0.5"
+  },
+  "devDependencies": {
+    "adonis-sink": "^1.0.6",
+    "apc-style": "^0.4.3",
+    "chai": "^4.1.2",
+    "codeclimate-test-reporter": "^0.5.0",
+    "coveralls": "^3.0.0",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "sinon": "^4.1.2",
+    "sinon-chai": "^2.14.0",
+    "stryker": "^0.15.4",
+    "stryker-api": "^0.11.0",
+    "stryker-html-reporter": "^0.11.2",
+    "stryker-javascript-mutator": "^0.2.3",
+    "stryker-mocha-framework": "^0.7.1",
+    "stryker-mocha-runner": "^0.10.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/APCOvernight/adonis-schema-generator.git"
+  },
+  "author": "Ian Egner <https://twitter.com/ianegner>",
+  "license": "MIT",
+  "nyc": {
+    "include": [
+      "src/**/*.js",
+      "providers/**/*.js",
+      "commands/**/*.js"
+    ],
+    "all": true,
+    "watermarks": {
+      "lines": [
+        90,
+        99
+      ],
+      "functions": [
+        90,
+        99
+      ],
+      "branches": [
+        90,
+        99
+      ],
+      "statements": [
+        90,
+        99
+      ]
+    },
+    "reporter": [
+      "clover",
+      "text",
+      "text-summary",
+      "html",
+      "cobertura"
+    ],
+    "cache": true
+  }
+}

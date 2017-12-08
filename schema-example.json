@@ -1,0 +1,353 @@
+{
+  "database": {
+    "name": "test"
+  },
+  "ui": {
+    "database": {
+      "showModal": false,
+      "edit": false
+    },
+    "table": {
+      "showModal": false,
+      "edit": false,
+      "editData": {
+        "id": "",
+        "name": "",
+        "softDelete": false,
+        "timeStamp": true
+      }
+    },
+    "column": {
+      "showModal": false,
+      "edit": false,
+      "editData": {
+        "id": "",
+        "name": "",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": false,
+        "index": false,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      "tableId": ""
+    },
+    "positions": {
+      "2h3q39": {
+        "x": 362,
+        "y": 110
+      },
+      "sq0v8": {
+        "x": 1087,
+        "y": 165
+      },
+      "myv42i": {
+        "x": 660,
+        "y": 392
+      }
+    }
+  },
+  "tables": [
+    {
+      "id": "2h3q39",
+      "name": "posts",
+      "softDelete": false,
+      "timeStamp": true
+    },
+    {
+      "id": "sq0v8",
+      "name": "comments",
+      "softDelete": false,
+      "timeStamp": true
+    },
+    {
+      "id": "myv42i",
+      "name": "users",
+      "softDelete": false,
+      "timeStamp": true
+    }
+  ],
+  "columns": {
+    "2h3q39": [
+      {
+        "id": "a10qir",
+        "name": "id",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": true,
+        "nullable": false,
+        "unique": true,
+        "index": true,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      {
+        "id": "85aef",
+        "name": "title",
+        "type": "string",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": true,
+        "unique": false,
+        "index": false,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      {
+        "id": "6fpfw9",
+        "name": "slug",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": true,
+        "index": true,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      {
+        "id": "ip3sf6",
+        "name": "userid",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": false,
+        "index": false,
+        "unsigned": true,
+        "foreignKey": {
+          "references": {
+            "id": "b0y62p",
+            "name": "id"
+          },
+          "on": {
+            "id": "myv42i",
+            "name": "users"
+          }
+        }
+      }
+    ],
+    "sq0v8": [
+      {
+        "id": "0gc1h",
+        "name": "id",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": true,
+        "nullable": false,
+        "unique": true,
+        "index": true,
+        "unsigned": true,
+        "foreignKey": {
+          "references": {
+            "id": "a10qir",
+            "name": "id"
+          },
+          "on": {
+            "id": "2h3q39",
+            "name": "posts"
+          }
+        }
+      },
+      {
+        "id": "ip197",
+        "name": "message",
+        "type": "text",
+        "length": "1000",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": false,
+        "index": false,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      {
+        "id": "oqje0f",
+        "name": "userid",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": false,
+        "index": false,
+        "unsigned": true,
+        "foreignKey": {
+          "references": {
+            "id": "b0y62p",
+            "name": "id"
+          },
+          "on": {
+            "id": "myv42i",
+            "name": "users"
+          }
+        }
+      }
+    ],
+    "myv42i": [
+      {
+        "id": "z8st7",
+        "name": "name",
+        "type": "text",
+        "length": "60",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": false,
+        "index": false,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      {
+        "id": "79km0sf",
+        "name": "email",
+        "type": "integer",
+        "length": "100",
+        "defValue": "",
+        "comment": "",
+        "autoInc": false,
+        "nullable": false,
+        "unique": true,
+        "index": false,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      },
+      {
+        "id": "b0y62p",
+        "name": "id",
+        "type": "integer",
+        "length": "",
+        "defValue": "",
+        "comment": "",
+        "autoInc": true,
+        "nullable": false,
+        "unique": true,
+        "index": true,
+        "unsigned": false,
+        "foreignKey": {
+          "references": {
+            "id": "",
+            "name": ""
+          },
+          "on": {
+            "id": "",
+            "name": ""
+          }
+        }
+      }
+    ]
+  },
+  "relations": [
+    {
+      "source": {
+        "columnId": "0gc1h",
+        "tableId": "sq0v8"
+      },
+      "target": {
+        "columnId": "a10qir",
+        "tableId": "2h3q39"
+      }
+    },
+    {
+      "source": {
+        "columnId": "ip3sf6",
+        "tableId": "2h3q39"
+      },
+      "target": {
+        "columnId": "b0y62p",
+        "tableId": "myv42i"
+      }
+    },
+    {
+      "source": {
+        "columnId": "oqje0f",
+        "tableId": "sq0v8"
+      },
+      "target": {
+        "columnId": "b0y62p",
+        "tableId": "myv42i"
+      }
+    }
+  ]
+}
