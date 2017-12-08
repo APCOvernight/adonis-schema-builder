@@ -76,7 +76,7 @@ class SchemaParser {
 
   _formatTables (rawTables, rawColumns) {
     const tables = this._setupTables(rawTables)
-    this._addColumns(rawColumns, tables)
+    this._mergeColumns(rawColumns, tables)
 
     return tables
   }
@@ -85,8 +85,8 @@ class SchemaParser {
     const tables = {}
     rawTables.forEach(table => {
       tables[table.name] = {
-        softDelete: table.softDelete,
-        timestamp: table.timeStamp
+        softDelete: table.softDelete || false,
+        timestamp: table.timeStamp || false
       }
       this.tableIds[table.id] = table.name
     })
@@ -94,7 +94,7 @@ class SchemaParser {
     return tables
   }
 
-  _addColumns (rawColumns, tables) {
+  _mergeColumns (rawColumns, tables) {
     Object.keys(tables).map(tableName => {
       const table = tables[tableName]
       const columnsObject = {}
@@ -105,22 +105,17 @@ class SchemaParser {
       })
 
       table.columns = columnsObject
-      table.keys = this._generateKeys(table.columns)
     })
   }
 
   _formatColumn (column) {
-    if (!(column.foreignKey && column.foreignKey.references && column.foreignKey.references && column.foreignKey.references.id)) {
+    if (!(column.foreignKey && column.foreignKey.references && column.foreignKey.references.id)) {
       column.foreignKey = null
     }
 
     column.knexString = this._columnKnex(column)
 
     return column
-  }
-
-  _generateKeys (columns) {
-
   }
 
   _columnKnex (column) {
@@ -194,7 +189,7 @@ class SchemaParser {
       typeString += `${column.type}('${column.name}'`
     }
 
-    if (column.type.includes('Text')) {
+    if (column.type && column.type.includes('Text')) {
       typeString += `text('${column.name}', '${column.type.replace('Text', '')}text'`
     }
 

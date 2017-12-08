@@ -2,9 +2,9 @@ module.exports = config => {
   config.set({
     files: [
       {
-        pattern: 'index.js',
+        pattern: 'src/**/*.js',
         mutated: true,
-        included: true
+        included: false
       },
       'test/**/*.js'
     ],
