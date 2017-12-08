@@ -1,5 +1,8 @@
 'use strict'
 
+const Utils = require('./Utils')
+const MigrationFormatter = require('./MigrationFormatter')
+
 class SchemaParser {
   constructor (schema) {
     this.schema = schema
@@ -34,7 +37,7 @@ class SchemaParser {
   _getColumnId (columnName, tableName) {
     let matchId
 
-    this._objectToArray(this.columnIds, 'id').map(column => {
+    Utils.objectToArray(this.columnIds, 'id').map(column => {
       if (column.name === columnName && column.table === tableName) {
         matchId = column.id
       }
@@ -43,24 +46,10 @@ class SchemaParser {
     return matchId
   }
 
-  _objectToArray (obj, keyField = 'key') {
-    const array = []
-
-    Object.keys(obj).map(key => {
-      const item = obj[key]
-      if (typeof item === 'object') {
-        item[keyField] = key
-      }
-      array.push(item)
-    })
-
-    return array
-  }
-
   convert () {
     const tables = this._formatTables(this.schema.tables, this.schema.columns)
 
-    const migrations = this._generateMigrations(tables)
+    const migrations = new MigrationFormatter().format(tables)
     const models = this._generateModels(tables)
     const seeds = this._generateSeeds(tables)
     const tests = this._generateTests(tables)
@@ -113,113 +102,7 @@ class SchemaParser {
       column.foreignKey = null
     }
 
-    column.knexString = this._columnKnex(column)
-
     return column
-  }
-
-  _columnKnex (column) {
-    let string = 'table.'
-
-    this._convertType(column)
-
-    string += this._knexType(column)
-    string += this._knexChain(column)
-    string += this._knexRelationships(column)
-
-    return string
-  }
-
-  _convertType (column) {
-    if (['tinyInteger', 'smallInteger', 'mediumInteger'].includes(column.type)) {
-      column.type = 'integer'
-    }
-
-    if (column.length && ['text', 'char'].includes(column.type)) {
-      column.type = 'string'
-    }
-
-    if (column.type === 'double') {
-      column.type = 'float'
-    }
-
-    if (column.type === 'char') {
-      column.type = 'text'
-    }
-
-    if (column.autoInc) {
-      column.type = 'increments'
-    }
-  }
-
-  _knexChain (column) {
-    let chainString = ''
-
-    if (column.defValue) {
-      chainString += `.defaultTo('${column.defValue}')`
-    }
-
-    if (!column.nullable) {
-      chainString += `.notNullable()`
-    }
-
-    if (column.unique) {
-      chainString += `.unique()`
-    }
-
-    if (column.index) {
-      chainString += `.index()`
-    }
-
-    if (column.unsigned) {
-      chainString += `.unsigned()`
-    }
-
-    if (column.comment) {
-      chainString += `.comment('${column.comment}')`
-    }
-
-    return chainString
-  }
-
-  _knexType (column) {
-    let typeString = ''
-
-    if (['text', 'string', 'integer', 'bigInteger', 'date', 'dateTime', 'timestamp', 'time', 'float', 'decimal', 'boolean', 'increments'].includes(column.type)) {
-      typeString += `${column.type}('${column.name}'`
-    }
-
-    if (column.type && column.type.includes('Text')) {
-      typeString += `text('${column.name}', '${column.type.replace('Text', '')}text'`
-    }
-
-    if (column.length) {
-      typeString += `, ${column.length}`
-    }
-
-    typeString += `)`
-
-    return typeString
-  }
-
-  _knexRelationships (column) {
-    let relationshipString = ''
-
-    if (column.foreignKey) {
-      relationshipString = `.references('${column.foreignKey.references.name}').on('${column.foreignKey.on.name}').onDelete('set null')`
-    }
-
-    return relationshipString
-  }
-
-  _generateMigrations (tables) {
-    const migrations = this._objectToArray(tables, 'name')
-
-    migrations.map(migration => {
-      migration.columns = this._objectToArray(migration.columns, 'name')
-    })
-
-    return migrations
   }
 
   _generateModels (tables) {
