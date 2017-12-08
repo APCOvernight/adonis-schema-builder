@@ -2,5 +2,7 @@ language: node_js
 node_js:
   - 'lts/*'
   - 'node'
+before_script:
+  - npm install -g @adonisjs/cli
 after_script:
   - npm run coverage
