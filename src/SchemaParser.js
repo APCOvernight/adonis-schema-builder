@@ -84,7 +84,8 @@ class SchemaParser {
         softDelete: table.softDelete || false,
         timestamp: table.timeStamp || false,
         isLink: table.name.includes('_'),
-        modelName: pluralize.singular(_.upperFirst(_.camelCase(table.name)))
+        modelName: pluralize.singular(_.upperFirst(_.camelCase(table.name))),
+        relations: {}
       }
       this.tableIds[table.id] = table.name
     })
@@ -139,67 +140,82 @@ class SchemaParser {
   }
 
   _decorateRelations (tables, relations) {
-    Object.keys(tables).map(tableName => {
-      const table = tables[tableName]
-      table.relations = {}
-    })
-
     relations.map(relation => {
-      const sourceName = this._getTableName(relation.source.tableId)
-      const source = tables[sourceName]
-      const sourceColumnName = this._getColumnName(relation.source.columnId)
-      const sourceColumn = tables[sourceName].columns[sourceColumnName]
+      this._getRelationData(tables, relation)
 
-      const targetName = this._getTableName(relation.target.tableId)
-      const target = tables[targetName]
-      const targetColumnName = this._getColumnName(relation.target.columnId)
-      // const targetColumn = tables[targetName].columns[targetColumnName]
+      if (!relation.sourceTable.isLink) {
+        this._setBelongsTo(relation)
 
-      if (!source.isLink) {
-        source.relations[pluralize.singular(_.lowerCase(targetName))] = {
-          type: 'belongsTo',
-          table: targetName,
-          relatedModel: target.modelName,
-          primaryKey: targetColumnName,
-          foreignKey: sourceColumnName
-        }
-
-        let targetRelationName = _.lowerCase(sourceName)
-        targetRelationName = sourceColumn.unique ? pluralize.singular(targetRelationName) : pluralize.plural(targetRelationName)
-
-        target.relations[targetRelationName] = {
-          type: sourceColumn.unique ? 'hasOne' : 'hasMany',
-          table: sourceName,
-          relatedModel: source.modelName,
-          primaryKey: targetColumnName,
-          foreignKey: sourceColumnName
-        }
+        this._setHas(relation)
       } else {
         const relatedRelations = relations.filter(related => {
           return related.source.tableId === relation.source.tableId && related.source.columnId !== relation.source.columnId
         })
 
         relatedRelations.map(related => {
-          const relatedName = this._getTableName(related.target.tableId)
-          const relatedTable = tables[relatedName]
-          const relatedColumnName = this._getColumnName(related.target.columnId)
-          const relatedForeignColumnName = this._getColumnName(related.source.columnId)
-
-          target.relations[pluralize.plural(_.lowerCase(relatedName))] = {
-            type: 'belongsToMany',
-            table: relatedName,
-            relatedModel: relatedTable.modelName,
-            primaryKey: targetColumnName,
-            foreignKey: sourceColumnName,
-            relatedPrimaryKey: relatedColumnName,
-            relatedForeignKey: relatedForeignColumnName,
-            pivotTable: sourceName,
-            withTimestamps: source.timestamp
-          }
+          this._setBelongsToMany(tables, relation, related)
         })
       }
     })
 
+    this._findHasManyThrough(tables)
+  }
+
+  _getRelationData (tables, relation) {
+    relation.sourceTableName = this._getTableName(relation.source.tableId)
+    relation.sourceTable = tables[relation.sourceTableName]
+    relation.sourceColumnName = this._getColumnName(relation.source.columnId)
+    relation.sourceColumn = tables[relation.sourceTableName].columns[relation.sourceColumnName]
+
+    relation.targetName = this._getTableName(relation.target.tableId)
+    relation.targetTable = tables[relation.targetName]
+    relation.targetColumnName = this._getColumnName(relation.target.columnId)
+    relation.targetColumn = tables[relation.targetName].columns[relation.targetColumnName]
+  }
+
+  _setBelongsTo (relation) {
+    relation.sourceTable.relations[pluralize.singular(_.lowerCase(relation.targetName))] = {
+      type: 'belongsTo',
+      table: relation.targetName,
+      relatedModel: relation.targetTable.modelName,
+      primaryKey: relation.targetColumnName,
+      foreignKey: relation.sourceColumnName
+    }
+  }
+
+  _setHas (relation) {
+    let targetRelationName = _.lowerCase(relation.sourceTableName)
+    targetRelationName = relation.sourceColumn.unique ? pluralize.singular(targetRelationName) : pluralize.plural(targetRelationName)
+
+    relation.targetTable.relations[targetRelationName] = {
+      type: relation.sourceColumn.unique ? 'hasOne' : 'hasMany',
+      table: relation.sourceTableName,
+      relatedModel: relation.sourceTable.modelName,
+      primaryKey: relation.targetColumnName,
+      foreignKey: relation.sourceColumnName
+    }
+  }
+
+  _setBelongsToMany (tables, relation, related) {
+    const relatedName = this._getTableName(related.target.tableId)
+    const relatedTable = tables[relatedName]
+    const relatedColumnName = this._getColumnName(related.target.columnId)
+    const relatedForeignColumnName = this._getColumnName(related.source.columnId)
+
+    relation.targetTable.relations[pluralize.plural(_.lowerCase(relatedName))] = {
+      type: 'belongsToMany',
+      table: relatedName,
+      relatedModel: relatedTable.modelName,
+      primaryKey: relation.targetColumnName,
+      foreignKey: relation.sourceColumnName,
+      relatedPrimaryKey: relatedColumnName,
+      relatedForeignKey: relatedForeignColumnName,
+      pivotTable: relation.sourceTableName,
+      withTimestamps: relation.sourceTable.timestamp
+    }
+  }
+
+  _findHasManyThrough (tables) {
     const chainable = ['belongsToMany', 'hasManyThrough', 'hasMany', 'hasOne']
 
     // Traverse through to find chainable relations
@@ -212,26 +228,24 @@ class SchemaParser {
           const relation = table.relations[relationName]
           const relatedTable = tables[relation.table]
 
-          if (chainable.includes(relation.type)) {
-            Utils.objectToArray(relatedTable.relations, 'name').map(nextRelation => {
-              if (chainable.includes(nextRelation.type) && !table.relations[nextRelation.name]) {
-                // If both relationships are chainable, and not already chained, set up hasManyThrough
+          Utils.objectToArray(relatedTable.relations, 'name').map(nextRelation => {
+            if (chainable.includes(relation.type) && chainable.includes(nextRelation.type) && !table.relations[nextRelation.name]) {
+              // If both relationships are chainable, and not already chained, set up hasManyThrough
 
-                table.relations[nextRelation.name] = {
-                  type: 'hasManyThrough',
-                  table: nextRelation.table,
-                  relatedModel: relatedTable.modelName,
-                  relatedMethod: nextRelation.name,
-                  name: nextRelation.name,
-                  primaryKey: relation.primaryKey,
-                  foreignKey: relation.foreignKey
-                }
-
-                // Keep the loop going again
-                i = 0
+              table.relations[nextRelation.name] = {
+                type: 'hasManyThrough',
+                table: nextRelation.table,
+                relatedModel: relatedTable.modelName,
+                relatedMethod: nextRelation.name,
+                name: nextRelation.name,
+                primaryKey: relation.primaryKey,
+                foreignKey: relation.foreignKey
               }
-            })
-          }
+
+              // Keep the loop going again
+              i = 0
+            }
+          })
         })
       })
     }
