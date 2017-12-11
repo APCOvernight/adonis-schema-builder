@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash')
+const pluralize = require('pluralize')
 const Utils = require('./Utils')
 const MigrationFormatter = require('./MigrationFormatter')
 const FactoryFormatter = require('./FactoryFormatter')
@@ -32,7 +34,7 @@ class SchemaParser {
   }
 
   _getColumnName (id) {
-    return this.columnIds[id].name
+    return this.columnIds[id].column
   }
 
   _getColumnId (columnName, tableName) {
@@ -49,6 +51,8 @@ class SchemaParser {
 
   convert () {
     const tables = this._formatTables(this.schema.tables, this.schema.columns)
+
+    this._decorateRelations(tables, this.schema.relations)
 
     const migrations = new MigrationFormatter().format(tables)
     const factories = new FactoryFormatter().format(tables)
@@ -79,7 +83,8 @@ class SchemaParser {
       tables[table.name] = {
         softDelete: table.softDelete || false,
         timestamp: table.timeStamp || false,
-        isLink: table.name.includes('_')
+        isLink: table.name.includes('_'),
+        modelName: pluralize.singular(_.upperFirst(_.camelCase(table.name)))
       }
       this.tableIds[table.id] = table.name
     })
@@ -131,6 +136,69 @@ class SchemaParser {
     if (column.autoInc) {
       column.type = 'increments'
     }
+  }
+
+  _decorateRelations (tables, relations) {
+    Object.keys(tables).map(tableName => {
+      const table = tables[tableName]
+      table.relations = {}
+    })
+
+    this.schema.relations.map(relation => {
+      const sourceName = this._getTableName(relation.source.tableId)
+      const source = tables[sourceName]
+      const sourceColumnName = this._getColumnName(relation.source.columnId)
+      const sourceColumn = tables[sourceName].columns[sourceColumnName]
+
+      const targetName = this._getTableName(relation.target.tableId)
+      const target = tables[targetName]
+      const targetColumnName = this._getColumnName(relation.target.columnId)
+      // const targetColumn = tables[targetName].columns[targetColumnName]
+
+      if (!source.isLink) {
+        source.relations[pluralize.singular(_.lowerCase(targetName))] = {
+          type: 'belongsTo',
+          table: targetName,
+          relatedModel: target.modelName,
+          primaryKey: targetColumnName,
+          foreignKey: sourceColumnName
+        }
+
+        let targetRelationName = _.lowerCase(sourceName)
+        targetRelationName = sourceColumn.unique ? pluralize.singular(targetRelationName) : pluralize.plural(targetRelationName)
+
+        target.relations[targetRelationName] = {
+          type: sourceColumn.unique ? 'hasOne' : 'hasMany',
+          table: sourceName,
+          relatedModel: source.modelName,
+          primaryKey: targetColumnName,
+          foreignKey: sourceColumnName
+        }
+      } else {
+        const relatedRelations = this.schema.relations.filter(related => {
+          return related.source.tableId === relation.source.tableId && related.source.columnId !== relation.source.columnId
+        })
+
+        relatedRelations.map(related => {
+          const relatedName = this._getTableName(related.target.tableId)
+          const relatedTable = tables[relatedName]
+          const relatedColumnName = this._getColumnName(related.target.columnId)
+          const relatedForeignColumnName = this._getColumnName(related.source.columnId)
+
+          target.relations[pluralize.plural(_.lowerCase(relatedName))] = {
+            type: 'belongsToMany',
+            table: targetName,
+            relatedModel: relatedTable.modelName,
+            primaryKey: targetColumnName,
+            foreignKey: sourceColumnName,
+            relatedPrimaryKey: relatedColumnName,
+            relatedForeignKey: relatedForeignColumnName,
+            pivotTable: sourceName,
+            withTimestamps: source.timestamp
+          }
+        })
+      }
+    })
   }
 
   _generateModels (tables) {

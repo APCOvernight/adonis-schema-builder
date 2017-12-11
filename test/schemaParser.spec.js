@@ -29,11 +29,11 @@ describe('Object manipulation helpers', () => {
   it('Get column name by id', () => {
     const schema = new SchemaParser()
     schema.columnIds.id123 = {
-      name: 'myField',
+      column: 'myField',
       table: 'myTable'
     }
     schema.columnIds.id333 = {
-      name: 'anotherField',
+      column: 'anotherField',
       table: 'anotherTable'
     }
 
@@ -230,7 +230,7 @@ describe('Format tables', () => {
 
 let schema
 
-describe('Output formatted objects and arrays', () => {
+describe('Decorate relationships to tables', () => {
   beforeEach(() => {
     schema = {
       tables: [
@@ -248,11 +248,11 @@ describe('Output formatted objects and arrays', () => {
         },
         {
           id: '4rsea1',
-          name: 'test'
+          name: 'categories'
         },
         {
           id: '8wraw',
-          name: 'users_posts'
+          name: 'posts_categories'
         }
       ],
       columns: {
@@ -278,7 +278,8 @@ describe('Output formatted objects and arrays', () => {
         '8wraw': [
 
         ]
-      }
+      },
+      relations: []
     }
   })
 
@@ -323,5 +324,314 @@ describe('Output formatted objects and arrays', () => {
     const { seeds } = new SchemaParser(schema).convert()
     expect(seeds).to.be.an('array')
     // expect(models[0].fields).to.be.an('array')
+  })
+})
+
+describe('Output formatted objects and arrays', () => {
+  beforeEach(() => {
+    schema = {
+      tables: [
+        {
+          id: '2h3q39',
+          name: 'posts'
+        },
+        {
+          id: 'sq0v8',
+          name: 'comments'
+        },
+        {
+          id: 'myv42i',
+          name: 'users'
+        },
+        {
+          id: '4rsea1',
+          name: 'categories'
+        },
+        {
+          id: '8wra3w',
+          name: 'posts_categories',
+          timeStamp: false
+        }
+      ],
+      columns: {
+        '2h3q39': [
+          { id: 'a10qir', name: 'id', autoInc: true },
+          { id: '85aef', name: 'title' },
+          { id: '6fpfw9', name: 'slug' },
+          { id: 'ip3sf6', name: 'user_id' }
+        ],
+        sq0v8: [
+          { id: '0gc1h', name: 'id', autoInc: true },
+          { id: 'ip197', name: 'message' },
+          { id: 'oqje0f', name: 'user_id' }
+        ],
+        myv42i: [
+          { id: 'b0y62p', name: 'id', autoInc: true },
+          { id: 'z8st7', name: 'name' },
+          { id: '79km0sf', name: 'email' }
+        ],
+        '4rsea1': [
+          { id: 'f4sge3', name: 'id', autoInc: true },
+          { id: '5afa4e', name: 'name' },
+          { id: 'fatnw2', name: 'description' },
+          { id: '4afasd', name: 'parent_id' }
+        ],
+        '8wra3w': [
+          { id: '8wh3kr', name: 'id', autoInc: true },
+          { id: '5namkk', name: 'post_id' },
+          { id: 'lk32as', name: 'category_id' }
+        ]
+      },
+      relations: [
+        {
+          source: {
+            columnId: 'ip3sf6',
+            tableId: '2h3q39'
+          },
+          target: {
+            columnId: 'b0y62p',
+            tableId: 'myv42i'
+          }
+        },
+        {
+          source: {
+            columnId: 'lk32as',
+            tableId: '8wra3w'
+          },
+          target: {
+            columnId: 'f4sge3',
+            tableId: '4rsea1'
+          }
+        },
+        {
+          source: {
+            columnId: '5namkk',
+            tableId: '8wra3w'
+          },
+          target: {
+            columnId: 'a10qir',
+            tableId: '2h3q39'
+          }
+        }
+      ]
+    }
+  })
+
+  it('Add a belongsTo relation', () => {
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables.posts.relations).to.be.an('object')
+    expect(tables.posts.modelName).to.equal('Post')
+    expect(tables.posts.relations.user).to.be.an('object')
+    expect(tables.posts.relations.user.type).equals('belongsTo')
+    expect(tables.posts.relations.user.relatedModel).equals('User')
+    expect(tables.posts.relations.user.primaryKey).equals('id')
+    expect(tables.posts.relations.user.foreignKey).equals('user_id')
+  })
+
+  it('Add a hasMany relation', () => {
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables.users.relations).to.be.an('object')
+    expect(tables.users.modelName).to.equal('User')
+    expect(tables.users.relations.posts).to.be.an('object')
+    expect(tables.users.relations.posts.type).equals('hasMany')
+    expect(tables.users.relations.posts.relatedModel).equals('Post')
+    expect(tables.users.relations.posts.primaryKey).equals('id')
+    expect(tables.users.relations.posts.foreignKey).equals('user_id')
+  })
+
+  it('Add a hasOne relation', () => {
+    schema.columns['2h3q39'][3].unique = true
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables.users.relations).to.be.an('object')
+    expect(tables.users.modelName).to.equal('User')
+    expect(tables.users.relations.post).to.be.an('object')
+    expect(tables.users.relations.post.type).equals('hasOne')
+    expect(tables.users.relations.post.relatedModel).equals('Post')
+    expect(tables.users.relations.post.primaryKey).equals('id')
+    expect(tables.users.relations.post.foreignKey).equals('user_id')
+  })
+
+  it('Add a 2 way belongsToMany relation', () => {
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables['posts_categories'].isLink).to.be.true
+    expect(tables.posts.relations).to.be.an('object')
+    expect(tables.posts.modelName).to.equal('Post')
+    expect(tables.posts.relations.categories).to.be.an('object')
+    expect(tables.posts.relations.categories.type).equals('belongsToMany')
+    expect(tables.posts.relations.categories.relatedModel).equals('Category')
+    expect(tables.posts.relations.categories.foreignKey).equals('post_id')
+    expect(tables.posts.relations.categories.relatedForeignKey).equals('category_id')
+    expect(tables.posts.relations.categories.primaryKey).equals('id')
+    expect(tables.posts.relations.categories.relatedPrimaryKey).equals('id')
+    expect(tables.posts.relations.categories.pivotTable).equals('posts_categories')
+
+    expect(tables.posts.relations.categories.withTimestamps).to.be.false
+
+    expect(tables.categories.relations).to.be.an('object')
+    expect(tables.categories.modelName).to.equal('Category')
+    expect(tables.categories.relations.posts).to.be.an('object')
+    expect(tables.categories.relations.posts.type).equals('belongsToMany')
+    expect(tables.categories.relations.posts.relatedModel).equals('Post')
+    expect(tables.categories.relations.posts.foreignKey).equals('category_id')
+    expect(tables.categories.relations.posts.relatedForeignKey).equals('post_id')
+    expect(tables.categories.relations.posts.primaryKey).equals('id')
+    expect(tables.categories.relations.posts.relatedPrimaryKey).equals('id')
+    expect(tables.categories.relations.posts.pivotTable).equals('posts_categories')
+    expect(tables.categories.relations.posts.withTimestamps).to.be.false
+  })
+
+  it('Set timestamps on pivot table', () => {
+    schema.tables[4].timeStamp = true
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables.posts.relations.categories.withTimestamps).to.be.true
+    expect(tables.categories.relations.posts.withTimestamps).to.be.true
+  })
+
+  it('Add a 3 way belongsToMany relation', () => {
+    schema = {
+      'tables': [
+        {
+          'id': '4taxn',
+          'name': 'users',
+          'softDelete': false
+        },
+        {
+          'id': '1slu3',
+          'name': 'companies',
+          'softDelete': false
+        },
+        {
+          'id': '9s2ral',
+          'name': 'roles',
+          'softDelete': false
+        },
+        {
+          'id': 'lpzrg',
+          'name': 'users_companies_roles',
+          'softDelete': false
+        }
+      ],
+      'columns': {
+        '4taxn': [
+          {
+            'id': '4328t',
+            'name': 'id'
+          }
+        ],
+        '1slu3': [
+          {
+            'id': 'eognag',
+            'name': 'id'
+          }
+        ],
+        '9s2ral': [
+          {
+            'id': '8qjulx',
+            'name': 'id'
+          }
+        ],
+        'lpzrg': [
+          {
+            'id': '1xmq2r',
+            'name': 'id'
+          },
+          {
+            'id': '4apmgc',
+            'name': 'user_id'
+          },
+          {
+            'id': 'hjgd5',
+            'name': 'company_id'
+          },
+          {
+            'id': '16rvwx',
+            'name': 'role_id'
+          }
+        ]
+      },
+      'relations': [
+        {
+          'source': {
+            'columnId': '4apmgc',
+            'tableId': 'lpzrg'
+          },
+          'target': {
+            'columnId': '4328t',
+            'tableId': '4taxn'
+          }
+        },
+        {
+          'source': {
+            'columnId': 'hjgd5',
+            'tableId': 'lpzrg'
+          },
+          'target': {
+            'columnId': 'eognag',
+            'tableId': '1slu3'
+          }
+        },
+        {
+          'source': {
+            'columnId': '16rvwx',
+            'tableId': 'lpzrg'
+          },
+          'target': {
+            'columnId': '8qjulx',
+            'tableId': '9s2ral'
+          }
+        }
+      ]
+    }
+
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables['users_companies_roles'].isLink).to.be.true
+
+    expect(tables.users.relations).to.be.an('object')
+    expect(tables.users.modelName).to.equal('User')
+    expect(tables.users.relations.roles).to.be.an('object')
+    expect(tables.users.relations.roles.type).equals('belongsToMany')
+    expect(tables.users.relations.roles.relatedModel).equals('Role')
+    expect(tables.users.relations.roles.foreignKey).equals('user_id')
+    expect(tables.users.relations.roles.relatedForeignKey).equals('role_id')
+    expect(tables.users.relations.roles.primaryKey).equals('id')
+    expect(tables.users.relations.roles.relatedPrimaryKey).equals('id')
+    expect(tables.users.relations.roles.pivotTable).equals('users_companies_roles')
+    expect(tables.users.relations.roles.withTimestamps).to.be.false
+
+    expect(tables.users.relations).to.be.an('object')
+    expect(tables.users.modelName).to.equal('User')
+    expect(tables.users.relations.companies).to.be.an('object')
+    expect(tables.users.relations.companies.type).equals('belongsToMany')
+    expect(tables.users.relations.companies.relatedModel).equals('Company')
+    expect(tables.users.relations.companies.foreignKey).equals('user_id')
+    expect(tables.users.relations.companies.relatedForeignKey).equals('company_id')
+    expect(tables.users.relations.companies.primaryKey).equals('id')
+    expect(tables.users.relations.companies.relatedPrimaryKey).equals('id')
+    expect(tables.users.relations.companies.pivotTable).equals('users_companies_roles')
+    expect(tables.users.relations.companies.withTimestamps).to.be.false
+
+    expect(tables.companies.relations).to.be.an('object')
+    expect(tables.companies.modelName).to.equal('Company')
+    expect(tables.companies.relations.roles).to.be.an('object')
+    expect(tables.companies.relations.roles.type).equals('belongsToMany')
+    expect(tables.companies.relations.roles.relatedModel).equals('Role')
+    expect(tables.companies.relations.roles.foreignKey).equals('company_id')
+    expect(tables.companies.relations.roles.relatedForeignKey).equals('role_id')
+    expect(tables.companies.relations.roles.primaryKey).equals('id')
+    expect(tables.companies.relations.roles.relatedPrimaryKey).equals('id')
+    expect(tables.companies.relations.roles.pivotTable).equals('users_companies_roles')
+    expect(tables.companies.relations.roles.withTimestamps).to.be.false
+
+    expect(tables.companies.relations).to.be.an('object')
+    expect(tables.companies.modelName).to.equal('Company')
+    expect(tables.companies.relations.users).to.be.an('object')
+    expect(tables.companies.relations.users.type).equals('belongsToMany')
+    expect(tables.companies.relations.users.relatedModel).equals('User')
+    expect(tables.companies.relations.users.foreignKey).equals('company_id')
+    expect(tables.companies.relations.users.relatedForeignKey).equals('user_id')
+    expect(tables.companies.relations.users.primaryKey).equals('id')
+    expect(tables.companies.relations.users.relatedPrimaryKey).equals('id')
+    expect(tables.companies.relations.users.pivotTable).equals('users_companies_roles')
+    expect(tables.companies.relations.users.withTimestamps).to.be.false
   })
 })

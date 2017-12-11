@@ -9,7 +9,10 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls && nyc report --reporter=text-lcov | codeclimate-test-reporter",
     "stryker": "stryker run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "pluralize": "^7.0.0"
+  },
   "peerDependencies": {
     "@adonisjs/ace": "^4.0.7",
     "@adonisjs/cli": "^3.0.17",
