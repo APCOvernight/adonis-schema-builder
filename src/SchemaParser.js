@@ -78,7 +78,8 @@ class SchemaParser {
     rawTables.forEach(table => {
       tables[table.name] = {
         softDelete: table.softDelete || false,
-        timestamp: table.timeStamp || false
+        timestamp: table.timeStamp || false,
+        isLink: table.name.includes('_')
       }
       this.tableIds[table.id] = table.name
     })

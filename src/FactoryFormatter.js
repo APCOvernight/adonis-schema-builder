@@ -4,7 +4,9 @@ const Utils = require('./Utils')
 
 class FactoryFormatter {
   format (tables) {
-    const factories = Utils.objectToArray(tables, 'name')
+    let factories = Utils.objectToArray(tables, 'name')
+
+    factories = factories.filter(factory => !factory.isLink)
 
     factories.map(factory => {
       factory.columnsArray = Utils.objectToArray(factory.columns, 'name')

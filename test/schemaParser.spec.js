@@ -249,6 +249,10 @@ describe('Output formatted objects and arrays', () => {
         {
           id: '4rsea1',
           name: 'test'
+        },
+        {
+          id: '8wraw',
+          name: 'users_posts'
         }
       ],
       columns: {
@@ -270,6 +274,9 @@ describe('Output formatted objects and arrays', () => {
         ],
         '4rsea1': [
           { id: 'f4sge3', name: 'id', autoInc: true }
+        ],
+        '8wraw': [
+
         ]
       }
     }
@@ -292,6 +299,12 @@ describe('Output formatted objects and arrays', () => {
 
     expect(factories[2].columnsArray[1].fieldRule).to.equal('email: faker.,')
     expect(factories[2].columnsArray[2].fieldRule).to.equal('id: faker.')
+  })
+
+  it('Factories aren\'t created for link tables (denomintated by underscore)', () => {
+    const { factories } = new SchemaParser(schema).convert()
+    expect(factories).to.be.an('array')
+    expect(factories.length).to.equal(4)
   })
 
   it('Models array is returned', () => {
