@@ -230,7 +230,7 @@ describe('Format tables', () => {
 
 let schema
 
-describe('Decorate relationships to tables', () => {
+describe('Output formatted objects and arrays', () => {
   beforeEach(() => {
     schema = {
       tables: [
@@ -327,7 +327,7 @@ describe('Decorate relationships to tables', () => {
   })
 })
 
-describe('Output formatted objects and arrays', () => {
+describe('Decorate relationships to tables', () => {
   beforeEach(() => {
     schema = {
       tables: [
@@ -588,6 +588,7 @@ describe('Output formatted objects and arrays', () => {
 
     expect(tables.users.relations).to.be.an('object')
     expect(tables.users.modelName).to.equal('User')
+
     expect(tables.users.relations.roles).to.be.an('object')
     expect(tables.users.relations.roles.type).equals('belongsToMany')
     expect(tables.users.relations.roles.relatedModel).equals('Role')
@@ -598,8 +599,6 @@ describe('Output formatted objects and arrays', () => {
     expect(tables.users.relations.roles.pivotTable).equals('users_companies_roles')
     expect(tables.users.relations.roles.withTimestamps).to.be.false
 
-    expect(tables.users.relations).to.be.an('object')
-    expect(tables.users.modelName).to.equal('User')
     expect(tables.users.relations.companies).to.be.an('object')
     expect(tables.users.relations.companies.type).equals('belongsToMany')
     expect(tables.users.relations.companies.relatedModel).equals('Company')
@@ -612,6 +611,7 @@ describe('Output formatted objects and arrays', () => {
 
     expect(tables.companies.relations).to.be.an('object')
     expect(tables.companies.modelName).to.equal('Company')
+
     expect(tables.companies.relations.roles).to.be.an('object')
     expect(tables.companies.relations.roles.type).equals('belongsToMany')
     expect(tables.companies.relations.roles.relatedModel).equals('Role')
@@ -622,8 +622,6 @@ describe('Output formatted objects and arrays', () => {
     expect(tables.companies.relations.roles.pivotTable).equals('users_companies_roles')
     expect(tables.companies.relations.roles.withTimestamps).to.be.false
 
-    expect(tables.companies.relations).to.be.an('object')
-    expect(tables.companies.modelName).to.equal('Company')
     expect(tables.companies.relations.users).to.be.an('object')
     expect(tables.companies.relations.users.type).equals('belongsToMany')
     expect(tables.companies.relations.users.relatedModel).equals('User')
@@ -633,5 +631,160 @@ describe('Output formatted objects and arrays', () => {
     expect(tables.companies.relations.users.relatedPrimaryKey).equals('id')
     expect(tables.companies.relations.users.pivotTable).equals('users_companies_roles')
     expect(tables.companies.relations.users.withTimestamps).to.be.false
+
+    expect(tables.roles.relations).to.be.an('object')
+    expect(tables.roles.modelName).to.equal('Role')
+
+    expect(tables.roles.relations.companies).to.be.an('object')
+    expect(tables.roles.relations.companies.type).equals('belongsToMany')
+    expect(tables.roles.relations.companies.relatedModel).equals('Company')
+    expect(tables.roles.relations.companies.foreignKey).equals('role_id')
+    expect(tables.roles.relations.companies.relatedForeignKey).equals('company_id')
+    expect(tables.roles.relations.companies.primaryKey).equals('id')
+    expect(tables.roles.relations.companies.relatedPrimaryKey).equals('id')
+    expect(tables.roles.relations.companies.pivotTable).equals('users_companies_roles')
+    expect(tables.roles.relations.companies.withTimestamps).to.be.false
+
+    expect(tables.roles.relations.users).to.be.an('object')
+    expect(tables.roles.relations.users.type).equals('belongsToMany')
+    expect(tables.roles.relations.users.relatedModel).equals('User')
+    expect(tables.roles.relations.users.foreignKey).equals('role_id')
+    expect(tables.roles.relations.users.relatedForeignKey).equals('user_id')
+    expect(tables.roles.relations.users.primaryKey).equals('id')
+    expect(tables.roles.relations.users.relatedPrimaryKey).equals('id')
+    expect(tables.roles.relations.users.pivotTable).equals('users_companies_roles')
+    expect(tables.roles.relations.users.withTimestamps).to.be.false
+  })
+
+  it('hasManyThrough relationship', () => {
+    schema = {
+      'tables': [
+        {
+          'id': '4taxn',
+          'name': 'users'
+        },
+        {
+          'id': '1slu3',
+          'name': 'companies'
+        },
+        {
+          'id': 'lpzrg',
+          'name': 'users_companies_roles'
+        },
+        {
+          'id': 'nephs',
+          'name': 'comments'
+        }
+      ],
+      'columns': {
+        '4taxn': [
+          {
+            'id': '4328t',
+            'name': 'id'
+          }
+        ],
+        '1slu3': [
+          {
+            'id': 'eognag',
+            'name': 'id'
+          }
+        ],
+        'lpzrg': [
+          {
+            'id': '1xmq2r',
+            'name': 'id'
+          },
+          {
+            'id': '4apmgc',
+            'name': 'user_id'
+          },
+          {
+            'id': 'hjgd5',
+            'name': 'company_id'
+          }
+        ],
+        'nephs': [
+          {
+            'id': 'twawj',
+            'name': 'id'
+          },
+          {
+            'id': '12fab9',
+            'name': 'user_id'
+          }
+        ]
+      },
+      'relations': [
+        {
+          'source': {
+            'columnId': '4apmgc',
+            'tableId': 'lpzrg'
+          },
+          'target': {
+            'columnId': '4328t',
+            'tableId': '4taxn'
+          }
+        },
+        {
+          'source': {
+            'columnId': 'hjgd5',
+            'tableId': 'lpzrg'
+          },
+          'target': {
+            'columnId': 'eognag',
+            'tableId': '1slu3'
+          }
+        },
+        {
+          'source': {
+            'columnId': '12fab9',
+            'tableId': 'nephs'
+          },
+          'target': {
+            'columnId': '4328t',
+            'tableId': '4taxn'
+          }
+        }
+      ]
+    }
+
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables['users_companies_roles'].isLink).to.be.true
+
+    expect(tables.users.relations).to.be.an('object')
+    expect(tables.users.modelName).to.equal('User')
+
+    expect(tables.users.relations.companies).to.be.an('object')
+    expect(tables.users.relations.companies.type).equals('belongsToMany')
+    expect(tables.users.relations.companies.relatedModel).equals('Company')
+    expect(tables.users.relations.companies.foreignKey).equals('user_id')
+    expect(tables.users.relations.companies.relatedForeignKey).equals('company_id')
+    expect(tables.users.relations.companies.primaryKey).equals('id')
+    expect(tables.users.relations.companies.relatedPrimaryKey).equals('id')
+    expect(tables.users.relations.companies.pivotTable).equals('users_companies_roles')
+    expect(tables.users.relations.companies.withTimestamps).to.be.false
+
+    expect(tables.comments.relations.user).to.be.an('object')
+    expect(tables.comments.relations.user.type).equals('belongsTo')
+    expect(tables.comments.relations.user.relatedModel).equals('User')
+    expect(tables.comments.relations.user.foreignKey).equals('user_id')
+    expect(tables.comments.relations.user.primaryKey).equals('id')
+
+    expect(tables.users.relations.comments).to.be.an('object')
+    expect(tables.users.relations.comments.type).equals('hasMany')
+    expect(tables.users.relations.comments.relatedModel).equals('Comment')
+    expect(tables.users.relations.comments.foreignKey).equals('user_id')
+    expect(tables.users.relations.comments.primaryKey).equals('id')
+
+    expect(tables.companies.relations.users).to.be.an('object')
+    expect(tables.companies.relations.users.type).equals('belongsToMany')
+    expect(tables.companies.relations.users.relatedModel).equals('User')
+
+    expect(tables.companies.relations.comments).to.be.an('object')
+    expect(tables.companies.relations.comments.type).equals('hasManyThrough')
+    expect(tables.companies.relations.comments.relatedModel).equals('User')
+    expect(tables.companies.relations.comments.relatedMethod).equals('comments')
+    expect(tables.companies.relations.comments.primaryKey).equals('id')
+    expect(tables.companies.relations.comments.foreignKey).equals('company_id')
   })
 })

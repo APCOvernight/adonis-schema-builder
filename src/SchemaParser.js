@@ -187,7 +187,7 @@ class SchemaParser {
 
           target.relations[pluralize.plural(_.lowerCase(relatedName))] = {
             type: 'belongsToMany',
-            table: targetName,
+            table: relatedName,
             relatedModel: relatedTable.modelName,
             primaryKey: targetColumnName,
             foreignKey: sourceColumnName,
@@ -199,6 +199,30 @@ class SchemaParser {
         })
       }
     })
+
+    for (let i = 0; i < 1; i) {
+      i = 1
+      Utils.objectToArray(tables, 'name').map(table => {
+        Utils.objectToArray(table.relations, 'name').map(relation => {
+          if (['belongsToMany', 'hasManyThrough', 'hasMany', 'hasOne'].includes(relation.type)) {
+            Utils.objectToArray(tables[relation.table].relations, 'name').map(nextRelation => {
+              if (['belongsToMany', 'hasManyThrough', 'hasMany', 'hasOne'].includes(nextRelation.type) && !tables[table.name].relations[nextRelation.table]) {
+                tables[table.name].relations[nextRelation.table] = {
+                  type: 'hasManyThrough',
+                  table: nextRelation.table,
+                  relatedModel: tables[relation.table].modelName,
+                  relatedMethod: nextRelation.name,
+                  name: nextRelation.name,
+                  primaryKey: relation.primaryKey,
+                  foreignKey: relation.foreignKey
+                }
+                i = 0
+              }
+            })
+          }
+        })
+      })
+    }
   }
 
   _generateModels (tables) {
