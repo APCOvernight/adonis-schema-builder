@@ -7,7 +7,7 @@ const expect = chai.expect
 const FactoryFormatter = require('../src/FactoryFormatter')
 const SchemaParser = require('../src/SchemaParser')
 
-describe('Knex string builder', () => {
+describe('Faker string builder', () => {
   it('Create a text field', () => {
     const column = {
       name: 'myColumn',

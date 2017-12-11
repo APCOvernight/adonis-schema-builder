@@ -5,6 +5,7 @@ const pluralize = require('pluralize')
 const Utils = require('./Utils')
 const MigrationFormatter = require('./MigrationFormatter')
 const FactoryFormatter = require('./FactoryFormatter')
+const ModelFormatter = require('./ModelFormatter')
 
 class SchemaParser {
   constructor (schema) {
@@ -56,7 +57,7 @@ class SchemaParser {
 
     const migrations = new MigrationFormatter().format(tables)
     const factories = new FactoryFormatter().format(tables)
-    const models = this._generateModels(tables)
+    const models = new ModelFormatter().format(tables)
     const seeds = this._generateSeeds(tables)
     const tests = this._generateTests(tables)
 
@@ -249,11 +250,6 @@ class SchemaParser {
         })
       })
     }
-  }
-
-  _generateModels (tables) {
-    const models = []
-    return models
   }
 
   _generateSeeds (tables) {
