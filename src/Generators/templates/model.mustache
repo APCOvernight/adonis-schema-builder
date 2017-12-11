@@ -1,0 +1,97 @@
+'use strict'
+
+const Model = use('Model')
+
+class {{name}} extends Model {
+  /*
+  |--------------------------------------------------------------------------
+  | Model Config
+  |--------------------------------------------------------------------------
+  */
+
+  /**
+   * Validator rules
+   * @type {Object}
+   */
+  static get rules () {
+    return {
+    {{ #columnsArray }}
+    {{ #validatorRule }}
+      {{ &validatorRule }}
+    {{ /validatorRule }}
+    {{ /columnsArray }}
+    }
+  }
+
+  /**
+   * messages to be returned to the end user
+   * upon validation failure
+   * @type {Object}
+   */
+  static get messages () {
+    return {
+    }
+  }
+
+  /**
+   * Sanitisation rules
+   * @type {Object}
+   */
+  static get sanitisationRules () {
+    return {
+    {{ #columnsArray }}
+    {{ #sanitisorRule }}
+      {{ &sanitisorRule }}
+    {{ /sanitisorRule }}
+    {{ /columnsArray }}
+    }
+  }
+  {{ #disableTimestamp }}
+
+  /**
+   * Disable created at column
+   * @type {null}
+   */
+  static get createdAtColumn () {
+    return null
+  }
+
+  /**
+   * Disable update at column
+   * @type {null}
+   */
+  static get updateAtColumn () {
+    return null
+  }
+  {{ /disableTimestamp }}
+  {{ #softDelete }}
+
+  /**
+   * Soft delete timestamp field
+   * @type {String}
+   */
+  static get deleteTimestamp () {
+    return 'deleted_at'
+  }
+  {{ /softDelete }}
+  {{ #hasRelations }}
+
+  /*
+  |--------------------------------------------------------------------------
+  | Relations
+  |--------------------------------------------------------------------------
+  */
+  {{ #relationsArray }}
+
+  /**
+   * {{ relatedModel }} relationship
+   * @type {Relationship}
+   */
+  {{ name }} () {
+    {{ &relationDeclaration }}
+  }
+  {{ /relationsArray }}
+  {{ /hasRelations }}
+}
+
+module.exports = {{name}}

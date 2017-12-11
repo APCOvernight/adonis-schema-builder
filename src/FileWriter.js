@@ -37,6 +37,20 @@ class FileWriter {
     }))
   }
 
+  async models (models) {
+    const deleteExisting = await this.commander.confirm('Overwrite existing models?')
+    if (deleteExisting) {
+      this.commander.emptyDir(path.join(this.options.appRoot, this.options.appDir, this.options.dirs.models))
+    }
+    return Promise.all(models.map(async model => {
+      if (deleteExisting) {
+        await this.commander.removeFile(path.join(this.options.appRoot, this.options.appDir, this.options.dirs.models, require('./Generators').model.getFileName(model.name) + '.js'))
+      }
+
+      return this._generateFile('model', model.modelName, model)
+    }))
+  }
+
   async factories (factories) {
     const factoryExists = await this.commander.pathExists(path.join(this.options.appRoot, this.options.dirs.migrations))
 
@@ -45,7 +59,7 @@ class FileWriter {
     })
     let deleteExisting
     if (factoryExists) {
-      deleteExisting = await this.commander.confirm('Delete existing factory.js?')
+      deleteExisting = await this.commander.confirm('Overwrite existing factory.js?')
       if (deleteExisting) {
         await this.commander.removeFile(path.join(this.options.appRoot, this.options.dirs.factory))
       }
@@ -58,7 +72,7 @@ class FileWriter {
     return null
   }
 
-  async _generateFile (templateFor, name, data, flags) {
+  async _generateFile (templateFor, name, data, flags = {}) {
     const generator = require('./Generators')[templateFor]
 
     const templateFile = path.join(__dirname, 'Generators/templates/', `${templateFor}.mustache`)
@@ -68,6 +82,7 @@ class FileWriter {
 
     const templateContents = await this.commander.readFile(templateFile, 'utf-8')
 
+    // TODO try catch around this, in case file already exists
     await this.commander.generateFile(filePath, templateContents, data)
 
     const createdFile = filePath.replace(process.cwd(), '').replace(path.sep, '')

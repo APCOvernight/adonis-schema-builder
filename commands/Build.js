@@ -43,6 +43,7 @@ class BuildCommand extends BaseCommand {
 
     await writer.migrations(templateSchema.migrations)
     await writer.factories(templateSchema.factories)
+    await writer.models(templateSchema.models)
   }
 
   async _loadSchema (path) {

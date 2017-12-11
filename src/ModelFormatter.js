@@ -23,6 +23,11 @@ class ModelFormatter {
       model.relationsArray.map(relation => {
         relation.relationDeclaration = this._generateRelationDeclaration(relation)
       })
+
+      model.disableTimestamp = !model.timestamp
+      model.hasRelations = !!model.relationsArray.length
+
+      // TODO remove comma from last row - Create util function
     })
 
     return models
