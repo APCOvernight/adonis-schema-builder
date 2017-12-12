@@ -27,7 +27,8 @@ class Commander {
 
   get chalk () {
     return {
-      green: () => {}
+      green: () => {},
+      red: () => {}
     }
   }
 
@@ -203,7 +204,7 @@ describe('Write factory file', () => {
   })
 })
 
-describe('Write factory file', () => {
+describe('Write model files', () => {
   it('Should prompt for delete - no', async () => {
     const commander = new Commander()
     const confirmStub = sinon.stub(commander, 'confirm').resolves(false)
@@ -237,6 +238,26 @@ describe('Write factory file', () => {
     confirmStub.restore()
     expect(removeFileStub).to.be.calledWith(path.resolve('test/.tmp/app/Models/Test.js'))
     removeFileStub.restore()
+    consoleStub.restore()
+  })
+
+  it('Should throw graceful error if file already exists', async () => {
+    const commander = new Commander()
+    const confirmStub = sinon.stub(commander, 'confirm').resolves(false)
+    const generateFileStub = sinon.stub(commander, 'generateFile').rejects(new Error('File already exists'))
+    const consoleStub = sinon.stub(console, 'error')
+
+    const writer = new FileWriter(commander)
+
+    const output = await writer.models([{ name: 'test', modelName: 'Test' }])
+
+    expect(output[0].error.message).to.equal('File already exists')
+    expect(consoleStub).to.be.calledWith('undefined undefined  File already exists')
+
+    expect(confirmStub).to.be.calledOnce
+    confirmStub.restore()
+    expect(generateFileStub).to.be.calledOnce
+    generateFileStub.restore()
     consoleStub.restore()
   })
 })

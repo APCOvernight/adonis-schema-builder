@@ -80,13 +80,18 @@ class FileWriter {
 
     const templateContents = await this.commander.readFile(templateFile, 'utf-8')
 
-    // TODO try catch around this, in case file already exists
-    await this.commander.generateFile(filePath, templateContents, data)
+    try {
+      await this.commander.generateFile(filePath, templateContents, data)
 
-    const createdFile = filePath.replace(process.cwd(), '').replace(path.sep, '')
-    console.info(`${this.commander.icon('success')} ${this.commander.chalk.green('create')}  ${createdFile}`)
+      const createdFile = filePath.replace(process.cwd(), '').replace(path.sep, '')
 
-    return { file: createdFile, namespace: this.commander.getNamespace(createdFile, templateFor), data }
+      console.info(`${this.commander.icon('success')} ${this.commander.chalk.green('create')}  ${createdFile}`)
+
+      return { file: createdFile, namespace: this.commander.getNamespace(createdFile, templateFor), data }
+    } catch (error) {
+      console.error(`${this.commander.icon('error')} ${this.commander.chalk.red('create')}  ${error.message}`)
+      return { error }
+    }
   }
 }
 
