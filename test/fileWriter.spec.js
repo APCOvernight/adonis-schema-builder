@@ -198,3 +198,6 @@ describe('Write factory file', () => {
     consoleStub.restore()
   })
 })
+
+// TODO test model writer
+// TODO integration tests

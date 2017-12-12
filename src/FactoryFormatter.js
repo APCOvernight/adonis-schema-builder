@@ -15,12 +15,7 @@ class FactoryFormatter {
         column.fieldRule = this._generateFieldRule(column)
       })
 
-      const columnsWithRules = factory.columnsArray.filter(column => column.fieldRule)
-
-      if (columnsWithRules.length) {
-        // Remove comma from last rule
-        columnsWithRules[columnsWithRules.length - 1].fieldRule = columnsWithRules[columnsWithRules.length - 1].fieldRule.slice(0, -1)
-      }
+      Utils.removeLastComma(factory.columnsArray, 'fieldRule')
     })
 
     return factories

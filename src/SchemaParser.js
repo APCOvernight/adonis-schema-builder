@@ -175,6 +175,8 @@ class SchemaParser {
   }
 
   _setBelongsTo (relation) {
+    // TODO Set up relationship to own table
+
     relation.sourceTable.relations[pluralize.singular(_.lowerCase(relation.targetName))] = {
       type: 'belongsTo',
       table: relation.targetName,

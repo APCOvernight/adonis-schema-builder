@@ -27,7 +27,8 @@ class ModelFormatter {
       model.disableTimestamp = !model.timestamp
       model.hasRelations = !!model.relationsArray.length
 
-      // TODO remove comma from last row - Create util function
+      Utils.removeLastComma(model.columnsArray, 'validatorRule')
+      Utils.removeLastComma(model.columnsArray, 'sanitisorRule')
     })
 
     return models
