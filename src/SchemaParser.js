@@ -222,7 +222,6 @@ class SchemaParser {
   }
 
   _findHasManyThrough (tables) {
-    // TODO Check if belongsToMany works
     const chainable = ['belongsToMany', 'hasManyThrough', 'hasMany', 'hasOne']
 
     // Traverse through to find chainable relations
@@ -236,8 +235,10 @@ class SchemaParser {
           const relatedTable = tables[relation.table]
 
           Utils.objectToArray(relatedTable.relations, 'name').map(nextRelation => {
-            // TODO Stop joining onto self (i.e. posts -> categories -> posts)
-            if (chainable.includes(relation.type) && chainable.includes(nextRelation.type) && !table.relations[nextRelation.name]) {
+            if (chainable.includes(relation.type) &&
+              chainable.includes(nextRelation.type) &&
+              !table.relations[nextRelation.name] &&
+              nextRelation.table !== tableName) {
               // If both relationships are chainable, and not already chained, set up hasManyThrough
 
               table.relations[nextRelation.name] = {

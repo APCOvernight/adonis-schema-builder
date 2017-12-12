@@ -799,5 +799,8 @@ describe('Decorate relationships to tables', () => {
     expect(tables.companies.relations.comments.relatedMethod).equals('comments')
     expect(tables.companies.relations.comments.primaryKey).equals('id')
     expect(tables.companies.relations.comments.foreignKey).equals('company_id')
+
+    // Don't join users back onto users
+    expect(tables.users.relations.users).to.be.undefined
   })
 })
