@@ -6,6 +6,10 @@ class FileWriter {
   constructor (commander) {
     this.commander = commander
 
+    /**
+     * Options passed to generator to define file paths etc
+     * @type {Object}
+     */
     this.options = {
       appDir: 'app',
       dirs: {
@@ -27,6 +31,11 @@ class FileWriter {
     }
   }
 
+  /**
+   * Write migration files
+   * @param  {Array.Object}  migrations formatted migrations schema
+   * @return {Array.Promise} Written files
+   */
   async migrations (migrations) {
     const deleteExisting = await this.commander.confirm('Delete existing migrations?')
     if (deleteExisting) {
@@ -37,6 +46,11 @@ class FileWriter {
     }))
   }
 
+  /**
+   * Write models files
+   * @param  {Array.Object}  models formatted models schema
+   * @return {Array.Promise} Written files
+   */
   async models (models) {
     const deleteExisting = await this.commander.confirm('Overwrite existing models?')
 
@@ -49,6 +63,11 @@ class FileWriter {
     }))
   }
 
+  /**
+   * Write factories file
+   * @param  {Array.Object}  factories formatted factories schema
+   * @return {Promise} Written file
+   */
   async factories (factories) {
     const factoryExists = await this.commander.pathExists(path.join(this.options.appRoot, this.options.dirs.migrations))
 
@@ -70,6 +89,14 @@ class FileWriter {
     return null
   }
 
+  /**
+   * Generate a file using a mustache template
+   * @param  {String}  templateFor template filename
+   * @param  {String}  name        name of file, may get modified depending on generator
+   * @param  {Object}  data        Data to be passed to mustache templates
+   * @param  {Object}  [flags={}]  Options to be passed to generator
+   * @return {Object}              Information about success/error and location of new file
+   */
   async _generateFile (templateFor, name, data, flags = {}) {
     const generator = require('./Generators')[templateFor]
 

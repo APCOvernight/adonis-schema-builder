@@ -8,16 +8,29 @@ const FactoryFormatter = require('./FactoryFormatter')
 const ModelFormatter = require('./ModelFormatter')
 
 class SchemaParser {
+  /**
+   * @param  {Object} schema Parsed JSON schema
+   */
   constructor (schema) {
     this.schema = schema
     this.tableIds = {}
     this.columnIds = {}
   }
 
+  /**
+   * get table name from an id
+   * @param  {[type]} id
+   * @return {[type]}
+   */
   _getTableName (id) {
     return this.tableIds[id]
   }
 
+  /**
+   * get table id from name
+   * @param  {String} name
+   * @return {String}
+   */
   _getTableId (name) {
     let matchId
 
@@ -30,14 +43,30 @@ class SchemaParser {
     return matchId
   }
 
+  /**
+   * get a column's table from id
+   * @param  {String} id
+   * @return {String}
+   */
   _getColumnTable (id) {
     return this.columnIds[id].table
   }
 
+  /**
+   * get a column's name from id
+   * @param  {String} id
+   * @return {String}
+   */
   _getColumnName (id) {
     return this.columnIds[id].column
   }
 
+  /**
+   * get a column id from the column and table name
+   * @param  {String} columnName
+   * @param  {String} tableName
+   * @return {String}
+   */
   _getColumnId (columnName, tableName) {
     let matchId
 
@@ -50,6 +79,10 @@ class SchemaParser {
     return matchId
   }
 
+  /**
+   * Convert the Schema JSON into a format ready for the file writer
+   * @return {Object}
+   */
   convert () {
     const tables = this._formatTables(this.schema.tables, this.schema.columns)
 
@@ -71,6 +104,12 @@ class SchemaParser {
     }
   }
 
+  /**
+   * Format the tables object ready for use in writers
+   * @param  {Object} rawTables  tables object from raw json schema
+   * @param  {Object} rawColumns  columns object from raw json schema
+   * @return {Object}
+   */
   _formatTables (rawTables, rawColumns) {
     const tables = this._setupTables(rawTables)
     this._mergeColumns(rawColumns, tables)
@@ -78,6 +117,11 @@ class SchemaParser {
     return tables
   }
 
+  /**
+   * Add basic data to each table
+   * @param  {Object} rawTables  tables object from raw json schema
+   * @return {Object}
+   */
   _setupTables (rawTables) {
     const tables = {}
     rawTables.forEach(table => {
@@ -94,6 +138,11 @@ class SchemaParser {
     return tables
   }
 
+  /**
+   * Add corresponding columns to the tables object
+   * @param  {Object} rawColumns  columns object from raw json schema
+   * @param  {Object} tables      partially formatted tables object
+   */
   _mergeColumns (rawColumns, tables) {
     Object.keys(tables).map(tableName => {
       const table = tables[tableName]
@@ -108,6 +157,11 @@ class SchemaParser {
     })
   }
 
+  /**
+   * Prepare column for tables object
+   * @param  {Object} column column object from raw json schema
+   * @return {Object}        [description]
+   */
   _formatColumn (column) {
     if (!(column.foreignKey && column.foreignKey.references && column.foreignKey.references.id)) {
       column.foreignKey = null
@@ -118,6 +172,10 @@ class SchemaParser {
     return column
   }
 
+  /**
+   * Convert schema builder types into corresponding knex types
+   * @param  {Object} column column object from raw json schema
+   */
   _convertType (column) {
     if (['tinyInteger', 'smallInteger', 'mediumInteger'].includes(column.type)) {
       column.type = 'integer'
@@ -140,6 +198,11 @@ class SchemaParser {
     }
   }
 
+  /**
+   * Add relations to tables
+   * @param  {Object} tables    Tables object
+   * @param  {Array} relations  relations array from raw json schema
+   */
   _decorateRelations (tables, relations) {
     relations.map(relation => {
       this._getRelationData(tables, relation)
@@ -162,6 +225,11 @@ class SchemaParser {
     this._findHasManyThrough(tables)
   }
 
+  /**
+   * Collate data about a relationship and the tables involved
+   * @param  {Object} tables    Tables object
+   * @param  {Object} relation  relation object from raw json schema
+   */
   _getRelationData (tables, relation) {
     relation.sourceTableName = this._getTableName(relation.source.tableId)
     relation.sourceTable = tables[relation.sourceTableName]
@@ -174,6 +242,10 @@ class SchemaParser {
     relation.targetColumn = tables[relation.targetTableName].columns[relation.targetColumnName]
   }
 
+  /**
+   * Add a belongsTo relationship to a table
+   * @param {Object} relation formatted relation object
+   */
   _setBelongsTo (relation) {
     let relationName = pluralize.singular(_.lowerCase(relation.targetTableName))
     if (relation.targetTableName === relation.sourceTableName) {
@@ -189,6 +261,10 @@ class SchemaParser {
     }
   }
 
+  /**
+   * Add a hasOne or hasMany relationship to a table
+   * @param {Object} relation formatted relation object
+   */
   _setHas (relation) {
     let targetRelationName = _.lowerCase(relation.sourceTableName)
     targetRelationName = relation.sourceColumn.unique ? pluralize.singular(targetRelationName) : pluralize.plural(targetRelationName)
@@ -202,6 +278,12 @@ class SchemaParser {
     }
   }
 
+  /**
+   * Add a belongsToMany relationship to a table
+   * @param  {Object} tables    Tables object
+   * @param {Object} relation   formatted relation object
+   * @param {Object} related    formatted relation object for corresponding relation
+   */
   _setBelongsToMany (tables, relation, related) {
     const relatedName = this._getTableName(related.target.tableId)
     const relatedTable = tables[relatedName]
@@ -221,6 +303,10 @@ class SchemaParser {
     }
   }
 
+  /**
+   * Traverse through relations to find chainable hasManyThrough relations
+   * @param {Object} relation formatted relation object
+   */
   _findHasManyThrough (tables) {
     const chainable = ['belongsToMany', 'hasManyThrough', 'hasMany', 'hasOne']
 

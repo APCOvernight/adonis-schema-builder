@@ -3,6 +3,11 @@
 const Utils = require('./Utils')
 
 class FactoryFormatter {
+  /**
+   * Format factories array before sending to writer
+   * @param  {Object} tables Tables schema
+   * @return {Array}
+   */
   format (tables) {
     let factories = Utils.objectToArray(tables, 'name')
 
@@ -21,6 +26,12 @@ class FactoryFormatter {
     return factories
   }
 
+  /**
+   * Generate the field rule value for a column
+   * to be printed in the factory
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _generateFieldRule (column) {
     if (column.type === 'increments' || column.foreignKey) {
       return null
@@ -36,6 +47,11 @@ class FactoryFormatter {
     return string
   }
 
+  /**
+   * Start off the field rule string with the faker type call
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _fakerType (column) {
     let string = ''
 
@@ -82,6 +98,11 @@ class FactoryFormatter {
     return string
   }
 
+  /**
+   * Cut the generated string if there is a length field
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _stringLength (column) {
     let string = ''
 

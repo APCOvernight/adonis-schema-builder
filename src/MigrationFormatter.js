@@ -3,6 +3,11 @@
 const Utils = require('./Utils')
 
 class MigrationFormatter {
+  /**
+   * Format migrations array before sending to writer
+   * @param  {Object} tables Tables schema
+   * @return {Array}
+   */
   format (tables) {
     const migrations = Utils.objectToArray(tables, 'name')
 
@@ -17,6 +22,11 @@ class MigrationFormatter {
     return migrations
   }
 
+  /**
+   * Generate a knex schema definition string
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _columnKnex (column) {
     let string = 'table.'
 
@@ -27,6 +37,11 @@ class MigrationFormatter {
     return string
   }
 
+  /**
+   * Add chainable methods to the knex string
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _knexChain (column) {
     let chainString = ''
 
@@ -57,6 +72,11 @@ class MigrationFormatter {
     return chainString
   }
 
+  /**
+   * Start Knex string with field type method call
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _knexType (column) {
     let typeString = ''
 
@@ -77,6 +97,11 @@ class MigrationFormatter {
     return typeString
   }
 
+  /**
+   * Add foreign key to knex string
+   * @param  {Object} column Column schema
+   * @return {String}
+   */
   _knexRelationships (column) {
     let relationshipString = ''
 
