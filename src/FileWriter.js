@@ -39,9 +39,7 @@ class FileWriter {
 
   async models (models) {
     const deleteExisting = await this.commander.confirm('Overwrite existing models?')
-    if (deleteExisting) {
-      this.commander.emptyDir(path.join(this.options.appRoot, this.options.appDir, this.options.dirs.models))
-    }
+
     return Promise.all(models.map(async model => {
       if (deleteExisting) {
         await this.commander.removeFile(path.join(this.options.appRoot, this.options.appDir, this.options.dirs.models, require('./Generators').model.getFileName(model.name) + '.js'))
