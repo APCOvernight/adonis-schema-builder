@@ -41,7 +41,8 @@ Run `adonis schema:build <path to schema file>` in your project root to import t
 
 ### Caveats
 
-- Link tables - link tables (tables that exist only to join other models) must be denoted with an underscore (i.e. posts_categories)
+- Link tables - link tables (tables that exist only to join other models) must be denoted with an underscore (i.e. posts_categories).
+- Soft Deletes - Currently not supported in V4, but should be added soon.
 
 ## Upcoming features
 
