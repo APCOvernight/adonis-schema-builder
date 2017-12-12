@@ -31,7 +31,7 @@ Use the [schema-builder GUI](agontuk.github.io/schema-designer) to design your s
 
 ### Importing the Schema
 
-Run `adonis schema:build <path to schema file>` to import the schema file and generate source files. You will be asked to confirm before overwriting any existing files.
+Run `adonis schema:build <path to schema file>` in your project root to import the schema file and generate source files. You will be asked to confirm before overwriting any existing files.
 
 ### Generated files
 
