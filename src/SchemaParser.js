@@ -168,18 +168,21 @@ class SchemaParser {
     relation.sourceColumnName = this._getColumnName(relation.source.columnId)
     relation.sourceColumn = tables[relation.sourceTableName].columns[relation.sourceColumnName]
 
-    relation.targetName = this._getTableName(relation.target.tableId)
-    relation.targetTable = tables[relation.targetName]
+    relation.targetTableName = this._getTableName(relation.target.tableId)
+    relation.targetTable = tables[relation.targetTableName]
     relation.targetColumnName = this._getColumnName(relation.target.columnId)
-    relation.targetColumn = tables[relation.targetName].columns[relation.targetColumnName]
+    relation.targetColumn = tables[relation.targetTableName].columns[relation.targetColumnName]
   }
 
   _setBelongsTo (relation) {
-    // TODO Set up relationship to own table
+    let relationName = pluralize.singular(_.lowerCase(relation.targetTableName))
+    if (relation.targetTableName === relation.sourceTableName) {
+      relationName = `parent${relation.targetTable.modelName}`
+    }
 
-    relation.sourceTable.relations[pluralize.singular(_.lowerCase(relation.targetName))] = {
+    relation.sourceTable.relations[relationName] = {
       type: 'belongsTo',
-      table: relation.targetName,
+      table: relation.targetTableName,
       relatedModel: relation.targetTable.modelName,
       primaryKey: relation.targetColumnName,
       foreignKey: relation.sourceColumnName

@@ -428,6 +428,19 @@ describe('Decorate relationships to tables', () => {
     expect(tables.posts.relations.user.foreignKey).equals('user_id')
   })
 
+  it('Add a belongsTo relation on self', () => {
+    schema.relations.push({
+      source: { columnId: '4afasd', tableId: '4rsea1' },
+      target: { columnId: 'f4sge3', tableId: '4rsea1' }
+    })
+    const { tables } = new SchemaParser(schema).convert()
+    expect(tables.categories.relations.parentCategory).to.be.an('object')
+    expect(tables.categories.relations.parentCategory.type).equals('belongsTo')
+    expect(tables.categories.relations.parentCategory.relatedModel).equals('Category')
+    expect(tables.categories.relations.parentCategory.primaryKey).equals('id')
+    expect(tables.categories.relations.parentCategory.foreignKey).equals('parent_id')
+  })
+
   it('Add a hasMany relation', () => {
     const { tables } = new SchemaParser(schema).convert()
     expect(tables.users.relations).to.be.an('object')
