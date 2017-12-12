@@ -164,7 +164,7 @@ describe('Write factory file', () => {
 
     const writer = new FileWriter(commander)
 
-    const output = await writer.factories([{ name: 'users' }])
+    const output = await writer.factories([{ name: 'users', modelName: 'User' }])
 
     expect(output.file).to.match(/test\/\.tmp\/database\/factory.js/)
 
@@ -188,7 +188,7 @@ describe('Write factory file', () => {
 
     const writer = new FileWriter(commander)
 
-    const output = await writer.factories([{ name: 'users' }])
+    const output = await writer.factories([{ name: 'users', modelName: 'User' }])
 
     expect(output.data.tables[0].name).to.equal('User')
 

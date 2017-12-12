@@ -52,8 +52,8 @@ class FileWriter {
   async factories (factories) {
     const factoryExists = await this.commander.pathExists(path.join(this.options.appRoot, this.options.dirs.migrations))
 
-    factories.map(table => {
-      table.name = require('./Generators').model.getFileName(table.name)
+    factories.map(factory => {
+      factory.name = factory.modelName
     })
     let deleteExisting
     if (factoryExists) {
