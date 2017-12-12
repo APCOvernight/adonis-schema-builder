@@ -76,5 +76,27 @@
       "cobertura"
     ],
     "cache": true
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/APCOvernight/adonis-schema-builder/issues"
+  },
+  "homepage": "https://github.com/APCOvernight/adonis-schema-builder#readme",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "adonis",
+    "schema",
+    "migrations",
+    "model",
+    "code",
+    "generator",
+    "adonisjs",
+    "schema",
+    "builder",
+    "schema",
+    "generator",
+    "factory",
+    "seed"
+  ]
 }
