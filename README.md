@@ -15,7 +15,7 @@ This package works with AdonisJS v4. In your project directory you'll need ace, 
 npm install --save @adonisjs/ace @adonisjs/cli @adonisjs/fold
 ```
 
-Then install adonis-schema-builder:
+These are all peer dependencies so you will get a warning from NPM if they're not installed first. Then install adonis-schema-builder:
 
 ```
 npm install --save adonis-schema-builder
