@@ -320,8 +320,6 @@ class SchemaParser {
           const relation = table.relations[relationName]
           const relatedTable = tables[relation.table]
 
-          // TODO Fix bug with nested relationships not calling highest relation
-
           Utils.objectToArray(relatedTable.relations, 'name').map(nextRelation => {
             if (chainable.includes(relation.type) &&
               chainable.includes(nextRelation.type) &&
@@ -334,7 +332,6 @@ class SchemaParser {
                 table: nextRelation.table,
                 relatedModel: relatedTable.modelName,
                 relatedMethod: nextRelation.name,
-                name: nextRelation.name,
                 primaryKey: relation.primaryKey,
                 foreignKey: relation.foreignKey
               }
