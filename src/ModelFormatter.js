@@ -67,35 +67,37 @@ class ModelFormatter {
    * @return {String}
    */
   _validatorType (column) {
+    let string = ''
+
     if (['timestamp'].includes(column.type)) {
-      return 'integer'
+      string = 'integer'
     }
 
     if (['text', 'string'].includes(column.type) || (column.type && column.type.includes('Text'))) {
-      return 'string'
+      string = 'string'
     }
 
     if (['integer', 'bigInteger'].includes(column.type)) {
       if (column.unsigned) {
-        return `integer|above:0`
+        string = `integer|above:0`
       } else {
-        return `integer`
+        string = `integer`
       }
     }
 
     if (['decimal', 'float'].includes(column.type)) {
-      return 'number'
+      string = 'number'
     }
 
     if (['date', 'time', 'dateTime'].includes(column.type)) {
-      return 'date'
+      string = 'date'
     }
 
     if (column.type === 'boolean') {
-      return 'boolean'
+      string = 'boolean'
     }
 
-    return ''
+    return string
   }
 
   /**
@@ -150,27 +152,29 @@ class ModelFormatter {
    * @return {String}
    */
   _sanitisorType (column) {
+    let string = ''
+
     if (['timestamp', 'integer', 'bigInteger'].includes(column.type)) {
-      return 'to_int'
+      string = 'to_int'
     }
 
     if (['text', 'string'].includes(column.type) || (column.type && column.type.includes('Text'))) {
-      return 'strip_tags'
+      string = 'strip_tags'
     }
 
     if (['decimal', 'float'].includes(column.type)) {
-      return 'to_float'
+      string = 'to_float'
     }
 
     if (['date', 'time', 'dateTime'].includes(column.type)) {
-      return 'to_date'
+      string = 'to_date'
     }
 
     if (column.type === 'boolean') {
-      return 'to_boolean'
+      string = 'to_boolean'
     }
 
-    return ''
+    return string
   }
 
   /**
