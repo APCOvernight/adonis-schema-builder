@@ -192,7 +192,7 @@ class ModelFormatter {
    * @return {String}
    */
   _generateBelongsTo (relation) {
-    return `return this.belongsTo('App/Models/${relation.relatedModel}', '${relation.primaryKey}', '${relation.foreignKey}')`
+    return `return this.belongsTo('App/Models/${relation.relatedModel}', '${relation.foreignKey}', '${relation.primaryKey}')`
   }
 
   /**
