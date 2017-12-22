@@ -581,7 +581,7 @@ describe('Model rule declaration strings', () => {
     }
     const relationDeclaration = new ModelFormatter()._generateRelationDeclaration(relation)
 
-    expect(relationDeclaration).to.equal(`return this.belongsTo('App/Models/User', 'id', 'user_id')`)
+    expect(relationDeclaration).to.equal(`return this.belongsTo('App/Models/User', 'user_id', 'id')`)
   })
 
   it('Rule for a hasOne relationship', () => {
