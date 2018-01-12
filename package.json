@@ -21,21 +21,9 @@
   "devDependencies": {
     "adonis-sink": "^1.0.6",
     "apc-style": "^0.4.3",
-    "chai": "^4.1.2",
-    "codeclimate-test-reporter": "^0.5.0",
-    "coveralls": "^3.0.0",
-    "mocha": "^4.0.1",
+    "apc-test": "^1.0.0",
     "mock-require": "^2.0.2",
-    "nyc": "^11.3.0",
-    "requireg": "^0.1.7",
-    "sinon": "^4.1.2",
-    "sinon-chai": "^2.14.0",
-    "stryker": "^0.15.4",
-    "stryker-api": "^0.11.0",
-    "stryker-html-reporter": "^0.11.2",
-    "stryker-javascript-mutator": "^0.3.2",
-    "stryker-mocha-framework": "^0.7.1",
-    "stryker-mocha-runner": "^0.10.1"
+    "requireg": "^0.1.7"
   },
   "repository": {
     "type": "git",
