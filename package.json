@@ -22,7 +22,7 @@
     "adonis-sink": "^1.0.6",
     "apc-style": "^0.4.3",
     "apc-test": "^1.0.0",
-    "mock-require": "^2.0.2",
+    "mock-require": "^3.0.0",
     "requireg": "^0.1.7"
   },
   "repository": {
