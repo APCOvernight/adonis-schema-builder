@@ -21,6 +21,12 @@ These are all peer dependencies so you will get a warning from NPM if they're no
 npm install --save adonis-schema-builder
 ```
 
+Add the following to your `aceProviders` array in `start/app.js`:
+
+```js
+'adonis-schema-builder/providers/BuilderProvider'
+```
+
 You should now see the `schema:build` option when running `adonis` or `ace`.
 
 ## How to use
