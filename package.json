@@ -1,6 +1,6 @@
 {
   "name": "adonis-schema-builder",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Quickly create adonis migrations, seeds, models and tests for AdonisJS from a schema json file",
   "main": "index.js",
   "scripts": {
