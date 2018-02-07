@@ -14,9 +14,9 @@
     "pluralize": "^7.0.0"
   },
   "peerDependencies": {
-    "@adonisjs/ace": "^4.0.7",
-    "@adonisjs/cli": "^3.0.17",
-    "@adonisjs/fold": "^4.0.5"
+    "@adonisjs/ace": ">=4.0.7",
+    "@adonisjs/cli": ">=3.0.17",
+    "@adonisjs/fold": ">=4.0.5"
   },
   "devDependencies": {
     "adonis-sink": "^1.0.6",
