@@ -7,6 +7,9 @@ const MigrationFormatter = require('./MigrationFormatter')
 const FactoryFormatter = require('./FactoryFormatter')
 const ModelFormatter = require('./ModelFormatter')
 
+/**
+ * Parse JSON schema
+ */
 class SchemaParser {
   /**
    * @param  {Object} schema Parsed JSON schema
@@ -305,7 +308,7 @@ class SchemaParser {
 
   /**
    * Traverse through relations to find chainable hasManyThrough relations
-   * @param {Object} relation formatted relation object
+   * @param {Object} tables formatted tables object
    */
   _findHasManyThrough (tables) {
     const chainable = ['belongsToMany', 'hasManyThrough', 'hasMany', 'hasOne']
@@ -345,11 +348,21 @@ class SchemaParser {
     }
   }
 
+  /**
+   * Generate Seed files
+   * @param {Object} tables formatted tables object
+   * @return {Array}
+   */
   _generateSeeds (tables) {
     const seeds = []
     return seeds
   }
 
+  /**
+   * Generate Test files
+   * @param {Object} tables formatted tables object
+   * @return {Array}
+   */
   _generateTests (tables) {
     const tests = []
     return tests
