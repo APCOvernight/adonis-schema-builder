@@ -6,3 +6,7 @@ before_script:
   - npm install -g @adonisjs/cli
 after_script:
   - npm run coverage
+notifications:
+    webhooks: https://www.travisbuddy.com/
+    on_success: never
+    
