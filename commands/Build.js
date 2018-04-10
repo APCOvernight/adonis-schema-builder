@@ -37,7 +37,7 @@ class BuildCommand extends BaseCommand {
       this.info('See command usage - ./ace schema:build -h')
     }
 
-    const templateSchema = new SchemaParser(schema).convert()
+    const templateSchema = await new SchemaParser(schema, this).convert()
 
     const writer = new FileWriter(this)
 

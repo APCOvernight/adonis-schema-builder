@@ -283,16 +283,16 @@ describe('Output formatted objects and arrays', () => {
     }
   })
 
-  it('Migrations array is returned', () => {
-    const { migrations } = new SchemaParser(schema).convert()
+  it('Migrations array is returned', async () => {
+    const { migrations } = await new SchemaParser(schema).convert()
     expect(migrations).to.be.an('array')
     expect(migrations[0].columnsArray).to.be.an('array')
     expect(migrations[0].columnsArray[0]).to.be.an('object')
     expect(migrations[0].columnsArray[0].knexString).to.not.be.undefined
   })
 
-  it('Factories array is returned', () => {
-    const { factories } = new SchemaParser(schema).convert()
+  it('Factories array is returned', async () => {
+    const { factories } = await new SchemaParser(schema).convert()
     expect(factories).to.be.an('array')
     expect(factories[0].columnsArray).to.be.an('array')
     expect(factories[0].columnsArray[0]).to.be.an('object')
@@ -302,26 +302,26 @@ describe('Output formatted objects and arrays', () => {
     expect(factories[2].columnsArray[2].fieldRule).to.equal('id: faker.')
   })
 
-  it('Factories aren\'t created for link tables (denomintated by underscore)', () => {
-    const { factories } = new SchemaParser(schema).convert()
+  it('Factories aren\'t created for link tables (denomintated by underscore)', async () => {
+    const { factories } = await new SchemaParser(schema).convert()
     expect(factories).to.be.an('array')
     expect(factories.length).to.equal(4)
   })
 
-  it('Models array is returned', () => {
-    const { models } = new SchemaParser(schema).convert()
+  it('Models array is returned', async () => {
+    const { models } = await new SchemaParser(schema).convert()
     expect(models).to.be.an('array')
     // expect(models[0].fields).to.be.an('array')
   })
 
-  it('Tests array is returned', () => {
-    const { tests } = new SchemaParser(schema).convert()
+  it('Tests array is returned', async () => {
+    const { tests } = await new SchemaParser(schema).convert()
     expect(tests).to.be.an('array')
     // expect(models[0].fields).to.be.an('array')
   })
 
-  it('Seeds array is returned', () => {
-    const { seeds } = new SchemaParser(schema).convert()
+  it('Seeds array is returned', async () => {
+    const { seeds } = await new SchemaParser(schema).convert()
     expect(seeds).to.be.an('array')
     // expect(models[0].fields).to.be.an('array')
   })
@@ -417,55 +417,55 @@ describe('Decorate relationships to tables', () => {
     }
   })
 
-  it('Add a belongsTo relation', () => {
-    const { tables } = new SchemaParser(schema).convert()
+  it('Add a belongsTo relation', async () => {
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables.posts.relations).to.be.an('object')
     expect(tables.posts.modelName).to.equal('Post')
-    expect(tables.posts.relations.user).to.be.an('object')
-    expect(tables.posts.relations.user.type).equals('belongsTo')
-    expect(tables.posts.relations.user.relatedModel).equals('User')
-    expect(tables.posts.relations.user.primaryKey).equals('id')
-    expect(tables.posts.relations.user.foreignKey).equals('user_id')
+    expect(tables.posts.relations.userId).to.be.an('object')
+    expect(tables.posts.relations.userId.type).equals('belongsTo')
+    expect(tables.posts.relations.userId.relatedModel).equals('User')
+    expect(tables.posts.relations.userId.primaryKey).equals('id')
+    expect(tables.posts.relations.userId.foreignKey).equals('user_id')
   })
 
-  it('Add a belongsTo relation on self', () => {
+  it('Add a belongsTo relation on self', async () => {
     schema.relations.push({
       source: { columnId: '4afasd', tableId: '4rsea1' },
       target: { columnId: 'f4sge3', tableId: '4rsea1' }
     })
-    const { tables } = new SchemaParser(schema).convert()
-    expect(tables.categories.relations.parentCategory).to.be.an('object')
-    expect(tables.categories.relations.parentCategory.type).equals('belongsTo')
-    expect(tables.categories.relations.parentCategory.relatedModel).equals('Category')
-    expect(tables.categories.relations.parentCategory.primaryKey).equals('id')
-    expect(tables.categories.relations.parentCategory.foreignKey).equals('parent_id')
+    const { tables } = await new SchemaParser(schema).convert()
+    expect(tables.categories.relations.parentId).to.be.an('object')
+    expect(tables.categories.relations.parentId.type).equals('belongsTo')
+    expect(tables.categories.relations.parentId.relatedModel).equals('Category')
+    expect(tables.categories.relations.parentId.primaryKey).equals('id')
+    expect(tables.categories.relations.parentId.foreignKey).equals('parent_id')
   })
 
-  it('Add a hasMany relation', () => {
-    const { tables } = new SchemaParser(schema).convert()
+  it('Add a hasMany relation', async () => {
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables.users.relations).to.be.an('object')
     expect(tables.users.modelName).to.equal('User')
-    expect(tables.users.relations.posts).to.be.an('object')
-    expect(tables.users.relations.posts.type).equals('hasMany')
-    expect(tables.users.relations.posts.relatedModel).equals('Post')
-    expect(tables.users.relations.posts.primaryKey).equals('id')
-    expect(tables.users.relations.posts.foreignKey).equals('user_id')
+    expect(tables.users.relations.postsUserId).to.be.an('object')
+    expect(tables.users.relations.postsUserId.type).equals('hasMany')
+    expect(tables.users.relations.postsUserId.relatedModel).equals('Post')
+    expect(tables.users.relations.postsUserId.primaryKey).equals('id')
+    expect(tables.users.relations.postsUserId.foreignKey).equals('user_id')
   })
 
-  it('Add a hasOne relation', () => {
+  it('Add a hasOne relation', async () => {
     schema.columns['2h3q39'][3].unique = true
-    const { tables } = new SchemaParser(schema).convert()
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables.users.relations).to.be.an('object')
     expect(tables.users.modelName).to.equal('User')
-    expect(tables.users.relations.post).to.be.an('object')
-    expect(tables.users.relations.post.type).equals('hasOne')
-    expect(tables.users.relations.post.relatedModel).equals('Post')
-    expect(tables.users.relations.post.primaryKey).equals('id')
-    expect(tables.users.relations.post.foreignKey).equals('user_id')
+    expect(tables.users.relations.postUserId).to.be.an('object')
+    expect(tables.users.relations.postUserId.type).equals('hasOne')
+    expect(tables.users.relations.postUserId.relatedModel).equals('Post')
+    expect(tables.users.relations.postUserId.primaryKey).equals('id')
+    expect(tables.users.relations.postUserId.foreignKey).equals('user_id')
   })
 
-  it('Add a 2 way belongsToMany relation', () => {
-    const { tables } = new SchemaParser(schema).convert()
+  it('Add a 2 way belongsToMany relation', async () => {
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables['posts_categories'].isLink).to.be.true
     expect(tables.posts.relations).to.be.an('object')
     expect(tables.posts.modelName).to.equal('Post')
@@ -493,14 +493,14 @@ describe('Decorate relationships to tables', () => {
     expect(tables.categories.relations.posts.withTimestamps).to.be.false
   })
 
-  it('Set timestamps on pivot table', () => {
+  it('Set timestamps on pivot table', async () => {
     schema.tables[4].timeStamp = true
-    const { tables } = new SchemaParser(schema).convert()
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables.posts.relations.categories.withTimestamps).to.be.true
     expect(tables.categories.relations.posts.withTimestamps).to.be.true
   })
 
-  it('Add a 3 way belongsToMany relation', () => {
+  it('Add a 3 way belongsToMany relation', async () => {
     schema = {
       'tables': [
         {
@@ -596,7 +596,7 @@ describe('Decorate relationships to tables', () => {
       ]
     }
 
-    const { tables } = new SchemaParser(schema).convert()
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables['users_companies_roles'].isLink).to.be.true
 
     expect(tables.users.relations).to.be.an('object')
@@ -669,7 +669,7 @@ describe('Decorate relationships to tables', () => {
     expect(tables.roles.relations.users.withTimestamps).to.be.false
   })
 
-  it('hasManyThrough relationship', () => {
+  it('hasManyThrough relationship', async () => {
     schema = {
       'tables': [
         {
@@ -761,7 +761,7 @@ describe('Decorate relationships to tables', () => {
       ]
     }
 
-    const { tables } = new SchemaParser(schema).convert()
+    const { tables } = await new SchemaParser(schema).convert()
     expect(tables['users_companies_roles'].isLink).to.be.true
 
     expect(tables.users.relations).to.be.an('object')
@@ -777,28 +777,28 @@ describe('Decorate relationships to tables', () => {
     expect(tables.users.relations.companies.pivotTable).equals('users_companies_roles')
     expect(tables.users.relations.companies.withTimestamps).to.be.false
 
-    expect(tables.comments.relations.user).to.be.an('object')
-    expect(tables.comments.relations.user.type).equals('belongsTo')
-    expect(tables.comments.relations.user.relatedModel).equals('User')
-    expect(tables.comments.relations.user.foreignKey).equals('user_id')
-    expect(tables.comments.relations.user.primaryKey).equals('id')
+    expect(tables.comments.relations.userId).to.be.an('object')
+    expect(tables.comments.relations.userId.type).equals('belongsTo')
+    expect(tables.comments.relations.userId.relatedModel).equals('User')
+    expect(tables.comments.relations.userId.foreignKey).equals('user_id')
+    expect(tables.comments.relations.userId.primaryKey).equals('id')
 
-    expect(tables.users.relations.comments).to.be.an('object')
-    expect(tables.users.relations.comments.type).equals('hasMany')
-    expect(tables.users.relations.comments.relatedModel).equals('Comment')
-    expect(tables.users.relations.comments.foreignKey).equals('user_id')
-    expect(tables.users.relations.comments.primaryKey).equals('id')
+    expect(tables.users.relations.commentsUserId).to.be.an('object')
+    expect(tables.users.relations.commentsUserId.type).equals('hasMany')
+    expect(tables.users.relations.commentsUserId.relatedModel).equals('Comment')
+    expect(tables.users.relations.commentsUserId.foreignKey).equals('user_id')
+    expect(tables.users.relations.commentsUserId.primaryKey).equals('id')
 
     expect(tables.companies.relations.users).to.be.an('object')
     expect(tables.companies.relations.users.type).equals('belongsToMany')
     expect(tables.companies.relations.users.relatedModel).equals('User')
 
-    expect(tables.companies.relations.comments).to.be.an('object')
-    expect(tables.companies.relations.comments.type).equals('hasManyThrough')
-    expect(tables.companies.relations.comments.relatedModel).equals('User')
-    expect(tables.companies.relations.comments.relatedMethod).equals('comments')
-    expect(tables.companies.relations.comments.primaryKey).equals('id')
-    expect(tables.companies.relations.comments.foreignKey).equals('company_id')
+    expect(tables.companies.relations.commentsUserId).to.be.an('object')
+    expect(tables.companies.relations.commentsUserId.type).equals('hasManyThrough')
+    expect(tables.companies.relations.commentsUserId.relatedModel).equals('User')
+    expect(tables.companies.relations.commentsUserId.relatedMethod).equals('commentsUserId')
+    expect(tables.companies.relations.commentsUserId.primaryKey).equals('id')
+    expect(tables.companies.relations.commentsUserId.foreignKey).equals('company_id')
 
     // Don't join users back onto users
     expect(tables.users.relations.users).to.be.undefined

@@ -14,8 +14,9 @@ class SchemaParser {
   /**
    * @param  {Object} schema Parsed JSON schema
    */
-  constructor (schema) {
+  constructor (schema, commander) {
     this.schema = schema
+    this.commander = commander
     this.tableIds = {}
     this.columnIds = {}
   }
@@ -86,10 +87,10 @@ class SchemaParser {
    * Convert the Schema JSON into a format ready for the file writer
    * @return {Object}
    */
-  convert () {
+  async convert () {
     const tables = this._formatTables(this.schema.tables, this.schema.columns)
 
-    this._decorateRelations(tables, this.schema.relations)
+    await this._decorateRelations(tables, this.schema.relations)
 
     const migrations = new MigrationFormatter().format(tables)
     const factories = new FactoryFormatter().format(tables)
@@ -206,25 +207,23 @@ class SchemaParser {
    * @param  {Object} tables    Tables object
    * @param  {Array} relations  relations array from raw json schema
    */
-  _decorateRelations (tables, relations) {
-    relations.map(relation => {
+  async _decorateRelations (tables, relations) {
+    for(const relation of relations){
       this._getRelationData(tables, relation)
 
       if (!relation.sourceTable.isLink) {
-        this._setBelongsTo(relation)
-
-        this._setHas(relation)
+        await this._setBelongsTo(relation)
+        await this._setHas(relation)
       } else {
         const relatedRelations = relations.filter(related => {
           return related.source.tableId === relation.source.tableId && related.source.columnId !== relation.source.columnId
         })
 
-        relatedRelations.map(related => {
-          this._setBelongsToMany(tables, relation, related)
-        })
+        for(const related of relatedRelations){
+          await this._setBelongsToMany(tables, relation, related)
+        }
       }
-    })
-
+    }
     this._findHasManyThrough(tables)
   }
 
@@ -249,11 +248,11 @@ class SchemaParser {
    * Add a belongsTo relationship to a table
    * @param {Object} relation formatted relation object
    */
-  _setBelongsTo (relation) {
-    let relationName = pluralize.singular(_.lowerCase(relation.targetTableName))
-    if (relation.targetTableName === relation.sourceTableName) {
-      relationName = `parent${relation.targetTable.modelName}`
-    }
+  async _setBelongsTo (relation) {
+    let relationName = _.camelCase(relation.sourceColumnName)
+    if(relation.sourceTable.relations[relationName] && this.commander){
+      relationName = await this.commander.ask(`a relation with the name "${relationName}" already exists on model ${pluralize.singular(relation.sourceTableName)}. please enter a new name`)    
+    }        
 
     relation.sourceTable.relations[relationName] = {
       type: 'belongsTo',
@@ -268,10 +267,16 @@ class SchemaParser {
    * Add a hasOne or hasMany relationship to a table
    * @param {Object} relation formatted relation object
    */
-  _setHas (relation) {
+  async _setHas (relation) {
     let targetRelationName = _.lowerCase(relation.sourceTableName)
-    targetRelationName = relation.sourceColumn.unique ? pluralize.singular(targetRelationName) : pluralize.plural(targetRelationName)
+    targetRelationName = relation.sourceColumn.unique 
+                          ? _.camelCase(pluralize.singular(targetRelationName) + "_" + relation.sourceColumnName) 
+                          : _.camelCase(pluralize.plural(targetRelationName) + "_" + relation.sourceColumnName) 
 
+    if(relation.targetTable.relations[targetRelationName] && this.commander){
+      targetRelationName = await this.commander.ask(`a relation with the name "${targetRelationName}" already exists on model ${pluralize.singular(relation.targetTableName)}. please enter a new name`)    
+    } 
+    
     relation.targetTable.relations[targetRelationName] = {
       type: relation.sourceColumn.unique ? 'hasOne' : 'hasMany',
       table: relation.sourceTableName,
@@ -287,13 +292,18 @@ class SchemaParser {
    * @param {Object} relation   formatted relation object
    * @param {Object} related    formatted relation object for corresponding relation
    */
-  _setBelongsToMany (tables, relation, related) {
+ async _setBelongsToMany (tables, relation, related) {
     const relatedName = this._getTableName(related.target.tableId)
     const relatedTable = tables[relatedName]
     const relatedColumnName = this._getColumnName(related.target.columnId)
     const relatedForeignColumnName = this._getColumnName(related.source.columnId)
+    let relationName = pluralize.plural(_.lowerCase(relatedName))
 
-    relation.targetTable.relations[pluralize.plural(_.lowerCase(relatedName))] = {
+    if(relation.targetTable.relations[relationName] && this.commander){
+      relationName = await this.commander.ask(`a relation with the name "${relationName}" already exists on model ${pluralize.singular(relation.targetTableName)}. please enter a new name`)    
+    } 
+
+    relation.targetTable.relations[relationName] = {
       type: 'belongsToMany',
       table: relatedName,
       relatedModel: relatedTable.modelName,
