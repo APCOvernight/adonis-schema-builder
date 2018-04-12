@@ -3,6 +3,8 @@
 /* eslint-disable no-unused-expressions */
 
 const chai = require('chai')
+chai.use(require('sinon-chai'))
+const sinon = require('sinon')
 const expect = chai.expect
 const SchemaParser = require('../src/SchemaParser')
 const Utils = require('../src/Utils')
@@ -395,6 +397,16 @@ describe('Decorate relationships to tables', () => {
         },
         {
           source: {
+            columnId: 'ip3sf6',
+            tableId: '2h3q39'
+          },
+          target: {
+            columnId: 'b0y62p',
+            tableId: 'myv42i'
+          }
+        },
+        {
+          source: {
             columnId: 'lk32as',
             tableId: '8wra3w'
           },
@@ -498,6 +510,21 @@ describe('Decorate relationships to tables', () => {
     const { tables } = await new SchemaParser(schema).convert()
     expect(tables.posts.relations.categories.withTimestamps).to.be.true
     expect(tables.categories.relations.posts.withTimestamps).to.be.true
+  })
+
+  it('Should handle duplicate relations', async () => {
+    class Commander {
+      ask () {
+
+      }
+    }
+    const commander = new Commander()
+    const askStub = sinon.stub(commander, 'ask').resolves('newRelationName')
+    const { tables } = await new SchemaParser(schema, commander).convert()
+    expect(askStub).to.be.calledTwice
+    askStub.restore()
+    expect(tables.posts.relations.newRelationName).to.be.an('object')
+    expect(tables.users.relations.newRelationName).to.be.an('object')
   })
 
   it('Add a 3 way belongsToMany relation', async () => {
