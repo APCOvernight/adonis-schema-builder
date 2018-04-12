@@ -244,16 +244,27 @@ class SchemaParser {
     relation.targetColumn = tables[relation.targetTableName].columns[relation.targetColumnName]
   }
 
+/**
+ * checks if a duplicate exists with the same name on the relations object
+ * and prompts the user to enter a new name if it dose
+ * @param {Array} relations
+ * @param {String} relationName
+ * @param {String} tableName
+ * @returns {String} relation name
+ */
+async _handleDuplicates (relations, relationName, tableName){
+    return relations[relationName] && this.commander
+            ? await this.commander.ask(`a relation with the name "${relationName}" already exists on model ${pluralize.singular(tableName)}. please enter a new name`)
+            : relationName
+}
+
   /**
    * Add a belongsTo relationship to a table
    * @param {Object} relation formatted relation object
    */
   async _setBelongsTo (relation) {
     let relationName = _.camelCase(relation.sourceColumnName)
-    if(relation.sourceTable.relations[relationName] && this.commander){
-      relationName = await this.commander.ask(`a relation with the name "${relationName}" already exists on model ${pluralize.singular(relation.sourceTableName)}. please enter a new name`)    
-    }        
-
+    relationName = await this._handleDuplicates (relation.sourceTable.relations, relationName, relation.sourceTableName)
     relation.sourceTable.relations[relationName] = {
       type: 'belongsTo',
       table: relation.targetTableName,
@@ -269,14 +280,12 @@ class SchemaParser {
    */
   async _setHas (relation) {
     let targetRelationName = _.lowerCase(relation.sourceTableName)
-    targetRelationName = relation.sourceColumn.unique 
-                          ? _.camelCase(pluralize.singular(targetRelationName) + "_" + relation.sourceColumnName) 
-                          : _.camelCase(pluralize.plural(targetRelationName) + "_" + relation.sourceColumnName) 
+    targetRelationName = relation.sourceColumn.unique
+                          ? _.camelCase(pluralize.singular(targetRelationName) + "_" + relation.sourceColumnName)
+                          : _.camelCase(pluralize.plural(targetRelationName) + "_" + relation.sourceColumnName)
 
-    if(relation.targetTable.relations[targetRelationName] && this.commander){
-      targetRelationName = await this.commander.ask(`a relation with the name "${targetRelationName}" already exists on model ${pluralize.singular(relation.targetTableName)}. please enter a new name`)    
-    } 
-    
+    targetRelationName = await this._handleDuplicates (relation.targetTable.relations, targetRelationName, relation.targetTableName)
+
     relation.targetTable.relations[targetRelationName] = {
       type: relation.sourceColumn.unique ? 'hasOne' : 'hasMany',
       table: relation.sourceTableName,
@@ -298,10 +307,7 @@ class SchemaParser {
     const relatedColumnName = this._getColumnName(related.target.columnId)
     const relatedForeignColumnName = this._getColumnName(related.source.columnId)
     let relationName = pluralize.plural(_.lowerCase(relatedName))
-
-    if(relation.targetTable.relations[relationName] && this.commander){
-      relationName = await this.commander.ask(`a relation with the name "${relationName}" already exists on model ${pluralize.singular(relation.targetTableName)}. please enter a new name`)    
-    } 
+    relationName = await this._handleDuplicates (relation.targetTable.relations, relationName, relation.targetTableName)
 
     relation.targetTable.relations[relationName] = {
       type: 'belongsToMany',
