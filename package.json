@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run lint && nyc mocha",
     "lint": "eslint *.js test/**/*.js src/**/*.js lib/**/*.js ",
-    "coverage": "nyc report --reporter=text-lcov | coveralls && nyc report --reporter=text-lcov | codeclimate-test-reporter",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "stryker": "stryker run"
   },
   "dependencies": {
@@ -20,8 +20,8 @@
   },
   "devDependencies": {
     "adonis-sink": "^1.0.6",
-    "apc-style": "^1.0.1",
-    "apc-test": "^1.0.0",
+    "apc-style": "1.1.0",
+    "apc-test": "1.1.0",
     "mock-require": "^3.0.0",
     "requireg": "^0.1.7"
   },
@@ -61,7 +61,8 @@
       "text",
       "text-summary",
       "html",
-      "cobertura"
+      "cobertura",
+      "lcov"
     ],
     "cache": true
   },
