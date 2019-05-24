@@ -23,7 +23,7 @@
     "apc-style": "^1.1.0",
     "apc-test": "1.1.0",
     "mock-require": "^3.0.0",
-    "requireg": "^0.1.7"
+    "requireg": "^0.2.2"
   },
   "repository": {
     "type": "git",
