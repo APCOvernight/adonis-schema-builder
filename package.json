@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
-    "pluralize": "^7.0.0"
+    "pluralize": "^8.0.0"
   },
   "peerDependencies": {
     "@adonisjs/ace": ">=4.0.7",
